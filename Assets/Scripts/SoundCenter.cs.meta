@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 97fc10e913dba4553a8c246a5f7cf6e1
+timeCreated: 1447316615
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - coinGet: {fileID: 8300000, guid: bfbbe32f836a0402880e4a6d5e791b3b, type: 3}
+  - coinSpend: {fileID: 8300000, guid: 7f8d9007bc70e4ad6b17315c2939ebad, type: 3}
+  - billGet: {fileID: 8300000, guid: cb29fb562344444f0bf3fcee87421639, type: 3}
+  - adultTalk: {fileID: 8300000, guid: 0717209eef94b453ba94aed3a3439d5c, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
