@@ -16,9 +16,9 @@ public class ArcadePlayer : MonoBehaviour {
 	public Transform dialogLookFocus;
 
 	Rigidbody rb;
-	int ticketNum = 0;
-	int bills = 0;
-	int tokens = 0;
+	public int ticketNum = 0;
+	public int bills = 0;
+	public int tokens = 0;
 
 	IEnumerator resetMessage() {
 		yield return new WaitForSeconds(1.25f);

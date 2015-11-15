@@ -382,6 +382,13 @@ public class PixelScreenLib : GameManager {
 		screenBuffer[ atX + (atY * screenWidth) ] = withColor;
 	}
 
+	public void safeDot(int atX,int atY,Color withColor) {
+		if(atX < 0 || atY < 0 || atX >= screenWidth || atY >= screenHeight) {
+			return;
+		}
+		screenBuffer[ atX + (atY * screenWidth) ] = withColor;
+	}
+
 	public void drawBoxAt(int leftSideX, int topSideY, int dim, Color32 useCol) {
 		int left = leftSideX;
 		int right = left+dim;

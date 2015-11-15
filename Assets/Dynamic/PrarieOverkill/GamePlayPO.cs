@@ -49,27 +49,27 @@ public class GamePlayPO : PixelScreenLib {
 
 	void drawStickManAt(int atX, int atY) {
 		// head... stick
-		drawBoxAt(atX,atY-4,1,yellowCol);
-		drawBoxAt(atX,atY-3,1,yellowCol);
+		drawBoxAt(atX-1,atY-5,3,yellowCol);
+		safeDot(atX,atY-2,yellowCol);
 		// arms
-		drawBoxAt(atX-2,atY,1,greenCol);
-		drawBoxAt(atX-2,atY+1,1,greenCol);
-		drawBoxAt(atX+2,atY,1,greenCol);
-		drawBoxAt(atX+2,atY+1,1,greenCol);
+		safeDot(atX-2,atY,greenCol);
+		safeDot(atX-2,atY+1,greenCol);
+		safeDot(atX+2,atY,greenCol);
+		safeDot(atX+2,atY+1,greenCol);
 		// shoulders
-		drawBoxAt(atX-1,atY-1,1,greenCol);
-		drawBoxAt(atX+1,atY-1,1,greenCol);
+		safeDot(atX-1,atY-1,greenCol);
+		safeDot(atX+1,atY-1,greenCol);
 		// torso
-		drawBoxAt(atX,atY-1,1,greenCol);
-		drawBoxAt(atX,atY,1,greenCol);
-		drawBoxAt(atX,atY+1,1,greenCol);
+		safeDot(atX,atY-1,greenCol);
+		safeDot(atX,atY,greenCol);
+		safeDot(atX,atY+1,greenCol);
 		// legs
-		drawBoxAt(atX-1,atY+2,1,greenCol);
-		drawBoxAt(atX-1,atY+3,1,greenCol);
-		drawBoxAt(atX-1,atY+4,1,greenCol);
-		drawBoxAt(atX+1,atY+2,1,greenCol);
-		drawBoxAt(atX+1,atY+3,1,greenCol);
-		drawBoxAt(atX+1,atY+4,1,greenCol);
+		safeDot(atX-1,atY+2,greenCol);
+		safeDot(atX-1,atY+3,greenCol);
+		safeDot(atX-1,atY+4,greenCol);
+		safeDot(atX+1,atY+2,greenCol);
+		safeDot(atX+1,atY+3,greenCol);
+		safeDot(atX+1,atY+4,greenCol);
 	}
 
 	void CenterBall() {
