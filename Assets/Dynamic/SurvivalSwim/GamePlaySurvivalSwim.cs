@@ -2,10 +2,36 @@
 using System.Collections;
 
 public class GamePlaySurvivalSwim : PixelScreenLib {
+	public Texture2D birdImg;
+	Color32[] birdBitmap;
+
+	public Texture2D sharkImg;
+	Color32[] sharkBitmap;
+
+	int birdFlapFrame = 0;
+
 	float ballX = 25;
 	float ballY = 20;
 	float ballXV = 3.4f;
 	float ballYV = 1.4f;
+
+	IEnumerator cycleAnims() {
+		while(true) {
+			birdFlapFrame++;
+			if(birdFlapFrame >= 4) {
+				birdFlapFrame = 0;
+			}
+			yield return new WaitForSeconds(0.125f);
+		}
+	}
+
+	void Awake() {
+		birdBitmap = birdImg.GetPixels32();
+		sharkBitmap = sharkImg.GetPixels32();
+
+		StartCoroutine(cycleAnims());
+		// Debug.Log (birdBitmap);
+	}
 
 	public override void PerGameInput() {
 		if(Input.GetKey(KeyCode.LeftArrow) && ballXV > 0.0f) {
@@ -44,7 +70,19 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 			ballYV *= -1.0f;
 		}
 		
-		drawBoxAt((int)ballX-1,(int)ballY-1,3,greenCol);
+		// drawBoxAt((int)ballX-1,(int)ballY-1,3,greenCol);
+
+		copyBitmapFromToColorArray(0,0, // start x,y from source
+		                           16, 8, // width and height from source
+		                           (int)ballX-1,(int)ballY-1, // destination x,y
+		                           sharkBitmap,sharkImg.width); // bitmap and its width
+									// no anim frame for shark
+
+		copyBitmapFromToColorArray(0,0, 16, 16,
+		                           32,76,
+		                           birdBitmap,birdImg.width,
+		                           birdFlapFrame); // anim as last argument
+		// paintThis.Apply();
 	}
 
 	void CenterBall() {

@@ -3,9 +3,9 @@ using System.Collections;
 
 public class PixelScreenLib : GameManager {
 	public Texture2D paintThis;
-	Color[] screenBuffer;
+	Color32[] screenBuffer;
 
-	protected Color bgCol = new Color(0.3f, 0.3f, 0.3f);
+	public Color bgCol = new Color(0.3f, 0.3f, 0.3f);
 	protected Color whiteCol = new Color(1.0f, 1.0f, 1.0f);
 	protected Color blackCol = new Color(0.0f, 0.0f, 0.0f);
 	protected Color redCol = new Color(1.0f, 0.0f, 0.0f);
@@ -26,7 +26,7 @@ public class PixelScreenLib : GameManager {
 		screenHeight = paintThis.width;
 
 		// leaving this between frames, only getting it here at start
-		screenBuffer = paintThis.GetPixels();
+		screenBuffer = paintThis.GetPixels32();
 
 		sharedColor = Color.white;
 		eraseTexture();
@@ -34,7 +34,7 @@ public class PixelScreenLib : GameManager {
 	}
 
 	private void showPixelBuffer() {
-		paintThis.SetPixels(screenBuffer);
+		paintThis.SetPixels32(screenBuffer);
 		paintThis.Apply();
 	}
 	
@@ -46,6 +46,24 @@ public class PixelScreenLib : GameManager {
 			}
 		}
 		showPixelBuffer();
+	}
+
+	protected void copyBitmapFromToColorArray(int sX, int sY, int sW, int sH,
+	                                          int dX, int dY, Color32[] src, int srcWid,
+	                                          int animMult = 0) {
+		int animSX = sX + sW*animMult;
+		for(int x=animSX; x < animSX + sW; x++) {
+			for(int y=sY; y < sY + sH; y++) {
+				int srcPixelIndex = x + ((sH+sY-1)-y)*srcWid;
+				if(src[srcPixelIndex].a > 32) { // skip invisible alpha
+					int drawX = dX+(x-animSX);
+					int drawY = dY+(y-sY);
+					if((drawX < 0 || drawX>=screenWidth || drawY < 0 || drawY>=screenHeight) == false){
+						screenBuffer[drawX + drawY*screenWidth] = src[srcPixelIndex];
+					}
+				}
+			}
+		}
 	}
 
 	protected void drawStringCentered(int fX, int fY, Color useCol, string thisText) {
