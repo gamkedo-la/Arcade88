@@ -18,7 +18,7 @@ public class PixelScreenLib : GameManager {
 	Color sharedColor;
 	
 	// Use this for initialization
-	void Start () {		
+	void Start () {
 		// paintThis = Instantiate(GetComponent<Renderer>().material.mainTexture) as Texture2D;
     	// GetComponent<Renderer>().material.mainTexture = paintThis;
 		
@@ -30,7 +30,13 @@ public class PixelScreenLib : GameManager {
 
 		sharedColor = Color.white;
 		eraseTexture();
+		PerPixelGameBootup();
 		StartCoroutine( LogicUpdate() );
+	}
+
+	public virtual void PerPixelGameBootup() {
+		Debug.Log (myCab.gameName +
+		           ": Each pixel game should override PerPixelGameBootup");
 	}
 
 	private void showPixelBuffer() {

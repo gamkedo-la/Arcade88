@@ -3,6 +3,9 @@ using System.Collections;
 
 public class GamePlay3 : PixelScreenLib {
 
+	public override void PerPixelGameBootup() {
+	}
+
 	public override void PerGameStart() {
 		Debug.Log ("No game init needed for broken game");
 	}

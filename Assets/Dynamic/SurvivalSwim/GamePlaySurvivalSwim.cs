@@ -25,7 +25,7 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 		}
 	}
 
-	void Awake() {
+	public override void PerPixelGameBootup() {
 		birdBitmap = birdImg.GetPixels32();
 		sharkBitmap = sharkImg.GetPixels32();
 

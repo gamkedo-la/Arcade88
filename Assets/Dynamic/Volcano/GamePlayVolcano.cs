@@ -7,6 +7,9 @@ public class GamePlayVolcano : PixelScreenLib {
 	float ballXV = 3.4f;
 	float ballYV = 1.4f;
 
+	public override void PerPixelGameBootup() {
+	}
+
 	public override void PerGameInput() {
 		if(Input.GetKey(KeyCode.LeftArrow) && ballXV > 0.0f) {
 			ballXV *= -1.0f;

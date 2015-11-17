@@ -1,85 +1,130 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+public class BasicCharacter {
+	public float x,y;
+	public float xv,yv;
+	public Color32[] bmp;
+
+	public BasicCharacter(Color32[] useBmp) {
+		x = y = 10;
+		xv = yv = 0;
+		bmp = useBmp;
+	}
+
+	public void SetPos(float sX, float sY) {
+		x = sX;
+		y = sY;
+	}
+
+	public void Move() {
+		x += xv;
+		y += yv;
+	}
+}
 
 public class GamePlayRCAD : PixelScreenLib {
-	float ballX = 25;
-	float ballY = 20;
-	float ballXV = 3.4f;
-	float ballYV = 1.4f;
+	public Texture2D dodgerImg;
+	Color32[] dodgerBitmap;
+
+	public Texture2D catImg;
+	Color32[] catBitmap;
+
+	public Texture2D dogImg;
+	Color32[] dogBitmap;
+
+	float playerX;
+	int playerY;
+
+	List<BasicCharacter> catsAndDogs = new List<BasicCharacter>();
+
+	public override void PerPixelGameBootup() {
+		dodgerBitmap = dodgerImg.GetPixels32();
+		catBitmap = catImg.GetPixels32();
+		dogBitmap = dogImg.GetPixels32();
+		ResetAllEnemies();
+	}
 
 	public override void PerGameInput() {
-		if(Input.GetKey(KeyCode.LeftArrow) && ballXV > 0.0f) {
-			ballXV *= -1.0f;
+		float playerSpeed = 23.0f;
+		float playerEdgeMargin = 5.0f;
+
+		if(Input.GetKey(KeyCode.LeftArrow) && playerX > playerEdgeMargin) {
+			playerX -= playerSpeed * Time.deltaTime;
 		}
-		if(Input.GetKey(KeyCode.RightArrow) && ballXV < 0.0f) {
-			ballXV *= -1.0f;
-		}
-		
-		if(Input.GetKey(KeyCode.UpArrow) && ballYV > 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(Input.GetKey(KeyCode.DownArrow) && ballYV < 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(Input.GetKeyDown(KeyCode.Space)) {
-			ballX = Random.Range(0.0f, screenWidth);
-			ballY = Random.Range(0.0f, screenHeight);
+		if(Input.GetKey(KeyCode.RightArrow) && playerX < screenWidth-1-playerEdgeMargin) {
+			playerX += playerSpeed * Time.deltaTime;
 		}
 	}
 
-	private void ballBounceAndDraw() {
-		ballX += ballXV;
-		ballY += ballYV;
-		
-		if(ballX < 0 && ballXV < 0.0f) {
-			ballXV *= -1.0f;
-		}
-		if(ballX > screenWidth && ballXV > 0.0f) {
-			ballXV *= -1.0f;
-		}
-		if(ballY < 0 && ballYV < 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(ballY > screenHeight && ballYV > 0.0f) {
-			ballYV *= -1.0f;
-		}
-		
-		drawBoxAt((int)ballX-1,(int)ballY-1,3,greenCol);
+	void ResetEnemy(BasicCharacter enemy) {
+		float spawnMargin = 6;
+		enemy.SetPos( Random.Range( spawnMargin, screenWidth-1-spawnMargin),
+		             spawnMargin-Random.Range(0.0f,screenHeight));
+		enemy.xv = Random.Range(-0.5f,0.5f);
+		enemy.yv = Random.Range (2.0f,3.4f);
 	}
 
-	void CenterBall() {
-		ballX = screenWidth/2;
-		ballY = screenHeight/2;
+	void ResetAllEnemies() {
+		catsAndDogs.Clear();
+		float spawnMargin = 6;
+		for(int i = 0; i<15; i++) {
+			BasicCharacter nextChar = new BasicCharacter(catBitmap);
+			ResetEnemy(nextChar);
+			catsAndDogs.Add( nextChar );
+		}
+	}
+
+	void MoveAndDrawEnemies() {
+		foreach(BasicCharacter catOrDog in catsAndDogs) {
+			catOrDog.Move();
+			if(catOrDog.y >= screenHeight) {
+				ResetEnemy(catOrDog);
+			} else {
+				copyBitmapFromToColorArray(0,0,
+				                           16, 8,
+				                           (int)catOrDog.x,(int)catOrDog.y,
+				                           dodgerBitmap,dodgerImg.width);
+			}
+		}
 	}
 
 	public override void PerGameStart() {
-		CenterBall();
+		playerX = screenWidth/2;
+		playerY = screenHeight-5;
+
+		ResetAllEnemies();
 	}
 
 	public override void PerGameExit() {
-		CenterBall();
+		// ResetAllEnemies();
 	}
 
 	public override void PerGameDemoMode() {
-		ballBounceAndDraw(); // for this game just let the ball bounce
+		MoveAndDrawEnemies();
 
 		drawStringCentered(screenWidth/2,screenHeight/8,whiteCol,"Raining Cats");
-		drawStringCentered(screenWidth/2,screenHeight/8+8,redCol,"and Dogs");
+		drawStringCentered(screenWidth/2,screenHeight/8+8,whiteCol,"and Dogs");
 	}
 
 	public override void PerGameDemoModeCoinRequestDisplay() {
 		if( flashing ) {
-			drawStringCentered(screenWidth/2,screenHeight/2,greenCol,"INSERT TOKEN");
+			drawStringCentered(screenWidth/2,screenHeight/2,yellowCol,"INSERT TOKEN");
 		}
 	}
 
 	public override void PerGameTimerDisplay() {
-		drawStringCentered(screenWidth/2,screenHeight/2+10,yellowCol,
+		drawStringCentered(screenWidth-15,15,whiteCol,
 		                   ""+ timerLeft);
 	}
 
 	public override void PerGameLogic() {
-		ballBounceAndDraw();
+		MoveAndDrawEnemies();
+		copyBitmapFromToColorArray(0,0,
+			                       16, 8,
+		                           (int)playerX-6,playerY-4,
+		                           dodgerBitmap,dodgerImg.width);
 	}
 	
 }

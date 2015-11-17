@@ -14,6 +14,11 @@ public class GamePlay2 : GameManager {
 	int score = 0;
 	int highScore = 0;
 
+	/* Reminder:
+	 * override void PerPixelGameBootup() {
+	 * is only for 2D pixel games. Just use Start() here for 3D games.
+	  */
+
 	void Update() {
 		base.Update();
 		GameLogic(); // 3D game so it's running in Unity's components, no coroutine driving it

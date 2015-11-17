@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour {
 	public float playTime = 4.0f;
 	private float endOfPlayTime;
 	protected int timerLeft = 0;
-	private PlayableGame myCab;
+	protected PlayableGame myCab;
 	protected bool flashing;
 
 	public void SetCab(PlayableGame cabinet) {
