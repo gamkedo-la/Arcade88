@@ -56,11 +56,11 @@ public class PixelScreenLib : GameManager {
 
 	protected void copyBitmapFromToColorArray(int sX, int sY, int sW, int sH,
 	                                          int dX, int dY, Color32[] src, int srcWid,
-	                                          int animMult = 0) {
+	                                          int animMult = 0, bool flipH = false) {
 		int animSX = sX + sW*animMult;
 		for(int x=animSX; x < animSX + sW; x++) {
 			for(int y=sY; y < sY + sH; y++) {
-				int srcPixelIndex = x + ((sH+sY-1)-y)*srcWid;
+				int srcPixelIndex = (flipH ? srcWid-1-x : x) + ((sH+sY-1)-y)*srcWid;
 				if(src[srcPixelIndex].a > 32) { // skip invisible alpha
 					int drawX = dX+(x-animSX);
 					int drawY = dY+(y-sY);
@@ -413,7 +413,10 @@ public class PixelScreenLib : GameManager {
 		screenBuffer[ atX + (atY * screenWidth) ] = withColor;
 	}
 
-	public void drawBoxAt(int leftSideX, int topSideY, int dim, Color32 useCol) {
+	public void drawBoxAt(int leftSideX, int topSideY, int dim, Color32 useCol, int dimH = -1) {
+		if(dimH == -1) {
+			dimH = dim; // assume square if no diff defined for vertical axis
+		}
 		int left = leftSideX;
 		int right = left+dim;
 		int top = topSideY;

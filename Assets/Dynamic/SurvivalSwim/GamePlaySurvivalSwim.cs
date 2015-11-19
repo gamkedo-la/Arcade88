@@ -2,11 +2,21 @@
 using System.Collections;
 
 public class GamePlaySurvivalSwim : PixelScreenLib {
+	public Texture2D playerImg;
+	Color32[] playerBitmap;
+
 	public Texture2D birdImg;
 	Color32[] birdBitmap;
 
 	public Texture2D sharkImg;
 	Color32[] sharkBitmap;
+
+	Color oceanCol = new Color(0.5f,0.5f,1.0f);
+
+	bool isBird = false;
+	float enemyX = 0;
+
+	int playerDodge = 0;
 
 	int birdFlapFrame = 0;
 
@@ -26,6 +36,7 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 	}
 
 	public override void PerPixelGameBootup() {
+		playerBitmap = playerImg.GetPixels32();
 		birdBitmap = birdImg.GetPixels32();
 		sharkBitmap = sharkImg.GetPixels32();
 
@@ -34,22 +45,12 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 	}
 
 	public override void PerGameInput() {
-		if(Input.GetKey(KeyCode.LeftArrow) && ballXV > 0.0f) {
-			ballXV *= -1.0f;
-		}
-		if(Input.GetKey(KeyCode.RightArrow) && ballXV < 0.0f) {
-			ballXV *= -1.0f;
-		}
-		
-		if(Input.GetKey(KeyCode.UpArrow) && ballYV > 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(Input.GetKey(KeyCode.DownArrow) && ballYV < 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(Input.GetKeyDown(KeyCode.Space)) {
-			ballX = Random.Range(0.0f, screenWidth);
-			ballY = Random.Range(0.0f, screenHeight);
+		if(Input.GetKey(KeyCode.UpArrow)) {
+			playerDodge = -1;
+		} else if(Input.GetKey(KeyCode.DownArrow)) {
+			playerDodge = 1;
+		} else {
+			playerDodge = 0;
 		}
 	}
 
@@ -71,17 +72,34 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 		}
 		
 		// drawBoxAt((int)ballX-1,(int)ballY-1,3,greenCol);
+		drawBoxAt(0,screenHeight>>1,screenWidth,oceanCol,screenHeight>>1);
 
-		copyBitmapFromToColorArray(0,0, // start x,y from source
+		if(isBird) {
+			enemyX -= 3.0f;
+			copyBitmapFromToColorArray(0,0,
+			                           16, 16,
+			                           (int)enemyX-8,45,
+			                           birdBitmap,birdImg.width,
+			                           birdFlapFrame); // anim as last argument
+
+		} else {
+			enemyX -= 2.0f;
+			copyBitmapFromToColorArray(0,0, // start x,y from source
 		                           16, 8, // width and height from source
-		                           (int)ballX-1,(int)ballY-1, // destination x,y
+		                           (int)enemyX-8, 70, // destination x,y
 		                           sharkBitmap,sharkImg.width); // bitmap and its width
 									// no anim frame for shark
+		}
 
-		copyBitmapFromToColorArray(0,0, 16, 16,
-		                           32,76,
-		                           birdBitmap,birdImg.width,
-		                           birdFlapFrame); // anim as last argument
+		if(enemyX < 0.0f) {
+			enemyX = screenWidth;
+			isBird = Random.Range(0,100) < 50.0f;
+		}
+
+		copyBitmapFromToColorArray(0,0, 8, 8,
+		                           15,60 + playerDodge*15,
+		                           playerBitmap,playerImg.width); // anim as last argument
+
 		// paintThis.Apply();
 	}
 

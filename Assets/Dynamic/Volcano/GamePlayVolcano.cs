@@ -66,8 +66,8 @@ public class GamePlayVolcano : PixelScreenLib {
 	public override void PerGameDemoMode() {
 		ballBounceAndDraw(); // for this game just let the ball bounce
 
-		drawStringCentered(screenWidth/2,screenHeight/8,whiteCol,"Maze");
-		drawStringCentered(screenWidth/2,screenHeight/8+8,redCol,"Don't Touch Walls");
+		drawStringCentered(screenWidth/2,screenHeight/8,whiteCol,"Volcano");
+		drawStringCentered(screenWidth/2,screenHeight/8+8,redCol,"Kablammo");
 	}
 
 	public override void PerGameDemoModeCoinRequestDisplay() {

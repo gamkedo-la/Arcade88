@@ -36,6 +36,7 @@ public class GamePlayRCAD : PixelScreenLib {
 
 	float playerX;
 	int playerY;
+	bool runLeft = false;
 
 	List<BasicCharacter> catsAndDogs = new List<BasicCharacter>();
 
@@ -52,9 +53,10 @@ public class GamePlayRCAD : PixelScreenLib {
 
 		if(Input.GetKey(KeyCode.LeftArrow) && playerX > playerEdgeMargin) {
 			playerX -= playerSpeed * Time.deltaTime;
-		}
-		if(Input.GetKey(KeyCode.RightArrow) && playerX < screenWidth-1-playerEdgeMargin) {
+			runLeft = true;
+		} else if(Input.GetKey(KeyCode.RightArrow) && playerX < screenWidth-1-playerEdgeMargin) {
 			playerX += playerSpeed * Time.deltaTime;
+			runLeft = false;
 		}
 	}
 
@@ -70,7 +72,8 @@ public class GamePlayRCAD : PixelScreenLib {
 		catsAndDogs.Clear();
 		float spawnMargin = 6;
 		for(int i = 0; i<15; i++) {
-			BasicCharacter nextChar = new BasicCharacter(catBitmap);
+			BasicCharacter nextChar = 
+				new BasicCharacter(Random.Range(0,100)<50 ? dogBitmap : catBitmap);
 			ResetEnemy(nextChar);
 			catsAndDogs.Add( nextChar );
 		}
@@ -83,9 +86,9 @@ public class GamePlayRCAD : PixelScreenLib {
 				ResetEnemy(catOrDog);
 			} else {
 				copyBitmapFromToColorArray(0,0,
-				                           16, 8,
-				                           (int)catOrDog.x,(int)catOrDog.y,
-				                           dodgerBitmap,dodgerImg.width);
+				                           16, 16,
+				                           (int)catOrDog.x-8,(int)catOrDog.y-8,
+				                           catOrDog.bmp,16);
 			}
 		}
 	}
@@ -122,9 +125,9 @@ public class GamePlayRCAD : PixelScreenLib {
 	public override void PerGameLogic() {
 		MoveAndDrawEnemies();
 		copyBitmapFromToColorArray(0,0,
-			                       16, 8,
-		                           (int)playerX-6,playerY-4,
-		                           dodgerBitmap,dodgerImg.width);
+			                       16, 16,
+		                           (int)playerX-8,playerY-11,
+		                           dodgerBitmap,dodgerImg.width,0,runLeft);
 	}
 	
 }
