@@ -20,6 +20,9 @@ public class ArcadePlayer : MonoBehaviour {
 	public int bills = 0;
 	public int tokens = 0;
 
+	public float zoomFOV = 45.0f;
+	private float baseFOV;
+
 	IEnumerator resetMessage() {
 		yield return new WaitForSeconds(1.25f);
 		tokenBillsChange(0,0);
@@ -109,7 +112,8 @@ public class ArcadePlayer : MonoBehaviour {
 	}
 
 	// Use this for initialization
-	void Start () {
+	void Start() {
+		baseFOV = Camera.main.fieldOfView;
 		hideMouse();
 		rb = GetComponent<Rigidbody>();
 		tokenBillsChange(1,0);
@@ -206,6 +210,15 @@ public class ArcadePlayer : MonoBehaviour {
 	void FixedUpdate() {
 		if(parentDialog.activeSelf==false && playingNow == null) {
 			rb.velocity = transform.forward * Input.GetAxis("Vertical") * 5.0f;
+		}
+
+		float cameraK = 0.89f;
+		if(playingNow != null) {
+			Camera.main.fieldOfView *= cameraK;
+			Camera.main.fieldOfView += zoomFOV*(1.0f-cameraK);
+		} else {
+			Camera.main.fieldOfView *= cameraK;
+			Camera.main.fieldOfView += baseFOV*(1.0f-cameraK);
 		}
 	}
 }

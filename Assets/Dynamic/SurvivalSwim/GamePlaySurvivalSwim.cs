@@ -36,6 +36,8 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 	}
 
 	public override void PerPixelGameBootup() {
+		disableAutoScreenClear = true; // sky and water
+
 		playerBitmap = playerImg.GetPixels32();
 		birdBitmap = birdImg.GetPixels32();
 		sharkBitmap = sharkImg.GetPixels32();
@@ -72,7 +74,8 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 		}
 		
 		// drawBoxAt((int)ballX-1,(int)ballY-1,3,greenCol);
-		drawBoxAt(0,screenHeight>>1,screenWidth,oceanCol,screenHeight>>1);
+		drawBoxAt(0,0,screenWidth,screenHeight>>1,bgCol);
+		drawBoxAt(0,screenHeight>>1,screenWidth,screenHeight>>1,oceanCol);
 
 		if(isBird) {
 			enemyX -= 3.0f;

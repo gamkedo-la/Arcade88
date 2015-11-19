@@ -6,6 +6,7 @@ public class PixelScreenLib : GameManager {
 	Color32[] screenBuffer;
 
 	public Color bgCol = new Color(0.3f, 0.3f, 0.3f);
+	protected bool disableAutoScreenClear = false;
 	protected Color whiteCol = new Color(1.0f, 1.0f, 1.0f);
 	protected Color blackCol = new Color(0.0f, 0.0f, 0.0f);
 	protected Color redCol = new Color(1.0f, 0.0f, 0.0f);
@@ -54,9 +55,22 @@ public class PixelScreenLib : GameManager {
 		showPixelBuffer();
 	}
 
-	protected void copyBitmapFromToColorArray(int sX, int sY, int sW, int sH,
-	                                          int dX, int dY, Color32[] src, int srcWid,
-	                                          int animMult = 0, bool flipH = false) {
+	protected Color32 getBitmapColor(int atX, int atY, Color32[] src, int srcWid, int srcHei) {
+		int srcPixelIndex = atX + (srcHei-1-atY)*srcWid;
+		if(srcPixelIndex >= 0 && srcPixelIndex < src.Length) {
+			return src[srcPixelIndex];
+		} else {
+			return blackCol;
+		}
+	}
+
+	protected void copyBitmapFromToColorArray(int sX, int sY, // top left xy of corner in source
+	                                          int sW, int sH, // width and height from source
+	                                          int dX, int dY, // destination x and y
+	                                          Color32[] src, // bitmap data
+	                                          int srcWid, // how many pixels wide the image is
+	                                          int animMult = 0, // which anim (horizontal strip) to use
+	                                          bool flipH = false) { // whether to mirror right-to-left
 		int animSX = sX + sW*animMult;
 		for(int x=animSX; x < animSX + sW; x++) {
 			for(int y=sY; y < sY + sH; y++) {
@@ -413,25 +427,22 @@ public class PixelScreenLib : GameManager {
 		screenBuffer[ atX + (atY * screenWidth) ] = withColor;
 	}
 
-	public void drawBoxAt(int leftSideX, int topSideY, int dim, Color32 useCol, int dimH = -1) {
-		if(dimH == -1) {
-			dimH = dim; // assume square if no diff defined for vertical axis
-		}
+	public void drawBoxAt(int leftSideX, int topSideY, int dimW, int dimH, Color32 useCol) {
 		int left = leftSideX;
-		int right = left+dim;
+		int right = left+dimW;
 		int top = topSideY;
-		int bot = topSideY+dim;
+		int bot = topSideY+dimH;
 		if(left < 0) {
 			left = 0;
 		}
 		if(top < 0) {
 			top = 0;
 		}
-		if(right >= screenWidth) {
-			right = screenWidth-1;
+		if(right > screenWidth) {
+			right = screenWidth;
 		}
-		if(bot >= screenHeight) {
-			bot = screenHeight-1;
+		if(bot > screenHeight) {
+			bot = screenHeight;
 		}
 		for(int xp=left; xp <right; xp++) {
 			for(int yp=top; yp <bot; yp++) {
@@ -444,8 +455,9 @@ public class PixelScreenLib : GameManager {
 	IEnumerator LogicUpdate() {
 
 		while(true) {
-			eraseTexture();
-			// drawBoxAt((int)ballX-1,(int)ballY-1,3,bgCol); // erase just the ball?
+			if(disableAutoScreenClear==false) {
+				eraseTexture();
+			}
 
 			GameLogic();
 

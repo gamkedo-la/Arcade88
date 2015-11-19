@@ -52,7 +52,7 @@ public class GamePlayRRSA : PixelScreenLib {
 
 	void drawStickManAt(int atX, int atY) {
 		// head... stick
-		drawBoxAt(atX-1,atY-5,3,yellowCol);
+		drawBoxAt(atX-1,atY-5,3,3,yellowCol);
 		safeDot(atX,atY-2,yellowCol);
 		// arms
 		safeDot(atX-2,atY,greenCol);

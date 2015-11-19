@@ -11,8 +11,6 @@ public class GamePlay2 : GameManager {
 	string savedBottomMessage;
 
 	Quaternion cubeOldRot;
-	int score = 0;
-	int highScore = 0;
 
 	/* Reminder:
 	 * override void PerPixelGameBootup() {
@@ -50,7 +48,6 @@ public class GamePlay2 : GameManager {
 		CoinText.text = "SPIN THAT CUBE!";
 
 		cubeOldRot = spinCube.transform.rotation;
-		score = 0;
 	}
 
 	public override void PerGameExit() {
@@ -74,14 +71,11 @@ public class GamePlay2 : GameManager {
 	}
 
 	public override void PerGameLogic() {
-		score += ((int)Quaternion.FromToRotation(spinCube.transform.rotation*Vector3.up,
-		                                       cubeOldRot*Vector3.up).eulerAngles.magnitude > 4 ? 5 : 0);
-		score += ((int)Quaternion.FromToRotation(spinCube.transform.rotation*Vector3.right,
-		                                         cubeOldRot*Vector3.right).eulerAngles.magnitude > 4) ? 7 : 0;
+		addToScore( ((int)Quaternion.FromToRotation(spinCube.transform.rotation*Vector3.up,
+		                                       cubeOldRot*Vector3.up).eulerAngles.magnitude > 4 ? 5 : 0));
+		           addToScore( ((int)Quaternion.FromToRotation(spinCube.transform.rotation*Vector3.right,
+		                                         cubeOldRot*Vector3.right).eulerAngles.magnitude > 4) ? 7 : 0);
 		CoinText.text = "Spins: "+score;
-		if(score > highScore) {
-			highScore = score;
-		}
 		cubeOldRot = spinCube.transform.rotation;
 		// no self driven code yet for this 3D demo, it's in the components instead, Unity-style
 	}

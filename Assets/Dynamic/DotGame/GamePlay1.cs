@@ -47,7 +47,7 @@ public class GamePlay1 : PixelScreenLib {
 			ballYV *= -1.0f;
 		}
 		
-		drawBoxAt((int)ballX-1,(int)ballY-1,3,greenCol);
+		drawBoxAt((int)ballX-1,(int)ballY-1,3,3,greenCol);
 	}
 
 	void CenterBall() {

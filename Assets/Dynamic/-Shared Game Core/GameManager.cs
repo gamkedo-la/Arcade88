@@ -4,10 +4,24 @@ using System.Collections;
 public class GameManager : MonoBehaviour {
 	public bool isPlaying;
 	public float playTime = 4.0f;
-	private float endOfPlayTime;
+	protected float endOfPlayTime;
 	protected int timerLeft = 0;
 	protected PlayableGame myCab;
 	protected bool flashing;
+
+	protected int score = 0;
+	protected int highScore = 0;
+
+	protected void clearScore() {
+		score = 0;
+	}
+
+	protected void addToScore(int scoreDelta) {
+		score += scoreDelta;
+		if(score > highScore) {
+			highScore = score;
+		}
+	}
 
 	public void SetCab(PlayableGame cabinet) {
 		myCab = cabinet;
@@ -25,6 +39,7 @@ public class GameManager : MonoBehaviour {
 
 	public void GameStart() {
 		endOfPlayTime = Time.time + playTime;
+		clearScore();
 		PerGameStart();
 	}
 
