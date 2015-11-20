@@ -1,88 +1,58 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
-public class GamePlayVolcano : PixelScreenLib {
-	float ballX = 25;
-	float ballY = 20;
-	float ballXV = 3.4f;
-	float ballYV = 1.4f;
+public class GamePlayVolcano : GameManager {
+	public CanvasScaler demoLayer;
+	public Text CoinText;
+	public Text TimeText;
+	public Text HighScoreText;
+	string savedBottomMessage;
+	
+	/* Reminder:
+	 * override void PerPixelGameBootup() {
+	 * is only for 2D pixel games. Just use Start() here for 3D games.
+	  */
 
-	public override void PerPixelGameBootup() {
+	void Update() {
+		base.Update();
+		GameLogic(); // 3D game so it's running in Unity's components, no coroutine driving it
 	}
 
 	public override void PerGameInput() {
-		if(Input.GetKey(KeyCode.LeftArrow) && ballXV > 0.0f) {
-			ballXV *= -1.0f;
-		}
-		if(Input.GetKey(KeyCode.RightArrow) && ballXV < 0.0f) {
-			ballXV *= -1.0f;
-		}
-		
-		if(Input.GetKey(KeyCode.UpArrow) && ballYV > 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(Input.GetKey(KeyCode.DownArrow) && ballYV < 0.0f) {
-			ballYV *= -1.0f;
-		}
 		if(Input.GetKeyDown(KeyCode.Space)) {
-			ballX = Random.Range(0.0f, screenWidth);
-			ballY = Random.Range(0.0f, screenHeight);
+			Debug.Log("Volcano Boom!");
+			addToScore(15);
 		}
-	}
-
-	private void ballBounceAndDraw() {
-		ballX += ballXV;
-		ballY += ballYV;
-		
-		if(ballX < 0 && ballXV < 0.0f) {
-			ballXV *= -1.0f;
-		}
-		if(ballX > screenWidth && ballXV > 0.0f) {
-			ballXV *= -1.0f;
-		}
-		if(ballY < 0 && ballYV < 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(ballY > screenHeight && ballYV > 0.0f) {
-			ballYV *= -1.0f;
-		}
-		
-		drawBoxAt((int)ballX-1,(int)ballY-1,3,3,greenCol);
-	}
-
-	void CenterBall() {
-		ballX = screenWidth/2;
-		ballY = screenHeight/2;
 	}
 
 	public override void PerGameStart() {
-		CenterBall();
+		savedBottomMessage = TimeText.text;
+		demoLayer.gameObject.SetActive(false);
+		CoinText.text = "Time for Max Boom!";
 	}
 
 	public override void PerGameExit() {
-		CenterBall();
+		TimeText.text = savedBottomMessage;
+		demoLayer.gameObject.SetActive(true);
 	}
 
 	public override void PerGameDemoMode() {
-		ballBounceAndDraw(); // for this game just let the ball bounce
-
-		drawStringCentered(screenWidth/2,screenHeight/8,whiteCol,"Volcano");
-		drawStringCentered(screenWidth/2,screenHeight/8+8,redCol,"Kablammo");
+		demoLayer.scaleFactor = Mathf.Cos (Time.time) * 0.2f + 1.0f;
+		HighScoreText.text = "High Score: "+highScore;
 	}
 
 	public override void PerGameDemoModeCoinRequestDisplay() {
-		if( flashing ) {
-			drawStringCentered(screenWidth/2,screenHeight/2,greenCol,"INSERT TOKEN");
-		}
+		CoinText.text = (flashing ? "insert token" : "");
 	}
 
 	public override void PerGameTimerDisplay() {
-		drawStringCentered(screenWidth/2,screenHeight/2+10,yellowCol,
-		                   ""+ timerLeft);
+		TimeText.text = ""+timerLeft;
 	}
 
 	public override void PerGameLogic() {
-		ballBounceAndDraw();
+		CoinText.text = "Damage: "+score;
+		// no self driven code yet for this 3D demo, it's in the components instead, Unity-style
 	}
 	
 }

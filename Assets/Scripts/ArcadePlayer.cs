@@ -139,6 +139,7 @@ public class ArcadePlayer : MonoBehaviour {
 	void Update () {
 		if(Input.GetKey( KeyCode.Escape )) {
 			showMouse();
+			Application.Quit();
 		}
 
 		if(playingNow != null) {
