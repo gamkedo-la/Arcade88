@@ -7,6 +7,12 @@ public class GamePlayRRSA : PixelScreenLib {
 	float ballXV = 3.4f;
 	float ballYV = 1.4f;
 
+	// platform speed X & Y
+	float platSpeedX = 1;
+	float platSpeedY = 1;
+	float platformX = 100;
+	float platformY = 100;
+
 	public override void PerPixelGameBootup() {
 	}
 
@@ -30,6 +36,7 @@ public class GamePlayRRSA : PixelScreenLib {
 		}
 	}
 
+	// move and draw function
 	private void ballBounceAndDraw() {
 		ballX += ballXV;
 		ballY += ballYV;
@@ -74,7 +81,7 @@ public class GamePlayRRSA : PixelScreenLib {
 		safeDot(atX+1,atY+3,greenCol);
 		safeDot(atX+1,atY+4,greenCol);
 	}
-
+	
 	void CenterBall() {
 		ballX = screenWidth/2;
 		ballY = screenHeight/2;
@@ -88,12 +95,13 @@ public class GamePlayRRSA : PixelScreenLib {
 		CenterBall();
 	}
 
+	// Demo Screen player sees in game before putting in tokens
 	public override void PerGameDemoMode() {
 		ballBounceAndDraw(); // for this game just let the ball bounce
 
 		drawStringCentered(screenWidth/2,screenHeight/8,whiteCol,"Ronald Reagan");
 		drawStringCentered(screenWidth/2,screenHeight/8+8,redCol,"Saves America");
-	}
+	}	
 
 	public override void PerGameDemoModeCoinRequestDisplay() {
 		if( flashing ) {
@@ -106,8 +114,34 @@ public class GamePlayRRSA : PixelScreenLib {
 		                   ""+ timerLeft);
 	}
 
+	// leftSideX, topSideY, int dim, Color32 useCol
+	void drawPlatform(int screenX, int screenY, int lengthOfPlatform) {
+		for(int i = 0; i < lengthOfPlatform; i++) {
+			drawBoxAt((screenX + i), screenY,3,yellowCol);
+		}
+	}
+	
+	void movePlatform(float platSpeedX, float platSpeedY) {
+		int lengthOfPlatform = 20;
+		drawPlatform ((int)platformX, (int)platSpeedY, lengthOfPlatform);
+	}
+
+
+
+	// seems like this is our main loop	
 	public override void PerGameLogic() {
+
+
 		ballBounceAndDraw();
+
+		movePlatform(platSpeedX, platSpeedY);
+
+
+		// Debugging screen
+		/*
+		Debug.Log (screenHeight + "HEIGHT");
+		Debug.Log (screenWidth + "WIDTH");
+		*/
 	}
 	
 }

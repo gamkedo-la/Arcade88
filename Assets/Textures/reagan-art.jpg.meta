@@ -1,11 +1,7 @@
 fileFormatVersion: 2
-<<<<<<< Updated upstream
-guid: 8e44fe896458128418bff33ed3981421
-=======
-guid: 20afc377c027743c195246fd0c80705a
-timeCreated: 1448067905
+guid: 1bcf1dd2c882e46b392bdd8a56e41331
+timeCreated: 1447827587
 licenseType: Free
->>>>>>> Stashed changes
 TextureImporter:
   fileIDToRecycleName: {}
   serializedVersion: 2
@@ -31,11 +27,7 @@ TextureImporter:
   cubemapConvolutionExponent: 1.5
   seamlessCubemap: 0
   textureFormat: -1
-<<<<<<< Updated upstream
-  maxTextureSize: 1024
-=======
   maxTextureSize: 2048
->>>>>>> Stashed changes
   textureSettings:
     filterMode: -1
     aniso: -1
@@ -45,10 +37,7 @@ TextureImporter:
   lightmap: 0
   rGBM: 0
   compressionQuality: 50
-<<<<<<< Updated upstream
-=======
   allowsAlphaSplitting: 0
->>>>>>> Stashed changes
   spriteMode: 0
   spriteExtrude: 1
   spriteMeshType: 1
@@ -58,33 +47,10 @@ TextureImporter:
   spritePixelsToUnits: 100
   alphaIsTransparency: 0
   textureType: -1
-<<<<<<< Updated upstream
-  buildTargetSettings:
-  - buildTarget: iPhone
-    maxTextureSize: 128
-    textureFormat: -1
-    compressionQuality: 50
-  - buildTarget: Android
-    maxTextureSize: 128
-    textureFormat: -1
-    compressionQuality: 50
-  - buildTarget: BlackBerry
-    maxTextureSize: 128
-    textureFormat: -1
-    compressionQuality: 50
-  - buildTarget: WP8
-    maxTextureSize: 128
-    textureFormat: -1
-    compressionQuality: 50
-=======
   buildTargetSettings: []
->>>>>>> Stashed changes
   spriteSheet:
     sprites: []
   spritePackingTag: 
   userData: 
   assetBundleName: 
-<<<<<<< Updated upstream
-=======
   assetBundleVariant: 
->>>>>>> Stashed changes
