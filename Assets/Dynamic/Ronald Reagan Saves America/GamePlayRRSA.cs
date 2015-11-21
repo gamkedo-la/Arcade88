@@ -1,103 +1,131 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+public class RRPlatform {
+	public float x,y, width;
+
+	public RRPlatform(float startX, float startY, float myWidth) {
+		x = startX;
+		y = startY;
+		width = myWidth;
+	}
+	
+	public void ShiftPlatform(float moveX) {
+		x += moveX;
+	}
+}
 
 public class GamePlayRRSA : PixelScreenLib {
-	float ballX = 25;
-	float ballY = 20;
-	float ballXV = 3.4f;
-	float ballYV = 1.4f;
+	public Texture2D rrImg;
+	Color32[] rrBitmap;
 
-	// platform speed X & Y
+	float rrX = 25;
+	float rrY = 20;
+	float rrXV = 3.4f;
+	float rrYV = 1.4f;
+
+	float fakeGravity = 0.9f;
+
+	bool rrIsInAir = false;
+
+	List<RRPlatform> platformList = new List<RRPlatform>();
+
+	// universal shared platform values
 	float platSpeedX = 1;
-	float platSpeedY = 1;
-	float platformX = 100;
-	float platformY = 100;
+	float platformH = 14.0f;
 
 	public override void PerPixelGameBootup() {
+		rrBitmap = rrImg.GetPixels32();
+
 	}
 
 	public override void PerGameInput() {
-		if(Input.GetKey(KeyCode.LeftArrow) && ballXV > 0.0f) {
-			ballXV *= -1.0f;
-		}
-		if(Input.GetKey(KeyCode.RightArrow) && ballXV < 0.0f) {
-			ballXV *= -1.0f;
-		}
-		
-		if(Input.GetKey(KeyCode.UpArrow) && ballYV > 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(Input.GetKey(KeyCode.DownArrow) && ballYV < 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(Input.GetKeyDown(KeyCode.Space)) {
-			ballX = Random.Range(0.0f, screenWidth);
-			ballY = Random.Range(0.0f, screenHeight);
+		if(Input.GetKeyDown(KeyCode.Space) && rrIsInAir == false) {
+			rrYV = -10.0f;
+			rrIsInAir = true;
 		}
 	}
 
 	// move and draw function
-	private void ballBounceAndDraw() {
-		ballX += ballXV;
-		ballY += ballYV;
-		
-		if(ballX < 0 && ballXV < 0.0f) {
-			ballXV *= -1.0f;
-		}
-		if(ballX > screenWidth && ballXV > 0.0f) {
-			ballXV *= -1.0f;
-		}
-		if(ballY < 0 && ballYV < 0.0f) {
-			ballYV *= -1.0f;
-		}
-		if(ballY > screenHeight && ballYV > 0.0f) {
-			ballYV *= -1.0f;
+	private void rrMoveAndDraw() {
+		if(rrIsInAir) {
+			rrYV += fakeGravity;
 		}
 
-		drawStickManAt((int)ballX,(int)ballY);
+		foreach( RRPlatform onePlat in platformList ) {
+			if( rrX > onePlat.x && rrX < onePlat.x + onePlat.width &&
+			   rrY > onePlat.y && rrY < onePlat.y + platformH) {
+				rrIsInAir = false;
+				rrY = onePlat.y-1.0f;
+				rrYV = 0.0f;
+			}
+		}
+
+		rrX += rrXV;
+		rrY += rrYV;
+		
+		if(rrX < 0 && rrXV < 0.0f) {
+			rrXV *= -1.0f;
+		}
+		if(rrX > screenWidth && rrXV > 0.0f) {
+			rrXV *= -1.0f;
+		}
+		if(rrY < 0 && rrYV < 0.0f) {
+			rrYV *= -1.0f;
+		}
+		if(rrY > screenHeight && rrYV > 0.0f) {
+			rrYV = 0.0f;
+			rrIsInAir = false;
+			Debug.Log ("Died");
+		}
+
+		drawStickManAt((int)rrX,(int)rrY);
 	}
 
 	void drawStickManAt(int atX, int atY) {
-		// head... stick
-		drawBoxAt(atX-1,atY-5,3,3,yellowCol);
-		safeDot(atX,atY-2,yellowCol);
-		// arms
-		safeDot(atX-2,atY,greenCol);
-		safeDot(atX-2,atY+1,greenCol);
-		safeDot(atX+2,atY,greenCol);
-		safeDot(atX+2,atY+1,greenCol);
-		// shoulders
-		safeDot(atX-1,atY-1,greenCol);
-		safeDot(atX+1,atY-1,greenCol);
-		// torso
-		safeDot(atX,atY-1,greenCol);
-		safeDot(atX,atY,greenCol);
-		safeDot(atX,atY+1,greenCol);
-		// legs
-		safeDot(atX-1,atY+2,greenCol);
-		safeDot(atX-1,atY+3,greenCol);
-		safeDot(atX-1,atY+4,greenCol);
-		safeDot(atX+1,atY+2,greenCol);
-		safeDot(atX+1,atY+3,greenCol);
-		safeDot(atX+1,atY+4,greenCol);
+		copyBitmapFromToColorArray(0,0,
+		                           16, 16,
+		                           (int)rrX-8,(int)rrY-16,
+		                           rrBitmap,16);
 	}
 	
-	void CenterBall() {
-		ballX = screenWidth/2;
-		ballY = screenHeight/2;
+	void Centerrr() {
+		rrX = screenWidth/4;
+		rrY = screenHeight/2;
+		rrXV = 0.0f;
+		rrYV = 0.0f;
+
+		platSpeedX = -1;
 	}
 
 	public override void PerGameStart() {
-		CenterBall();
+		platformList.Clear();
+
+		float nextPlatformX = 0;
+		float howLongIsNextPlatform;
+		float platformGap;
+		for(int i=0;i<10;i++) {
+			howLongIsNextPlatform = Random.Range(5,20);
+			platformGap = Random.Range(8,12);
+
+			platformList.Add ( new RRPlatform(nextPlatformX,
+			                                  (int)(Random.Range(0.4f,0.8f)*screenHeight),
+			                                  (int)howLongIsNextPlatform) );
+			nextPlatformX += howLongIsNextPlatform + platformGap;
+		}
+
+		Centerrr();
+		// disableAutoScreenClear = true;
 	}
 
 	public override void PerGameExit() {
-		CenterBall();
+		Centerrr();
 	}
 
 	// Demo Screen player sees in game before putting in tokens
 	public override void PerGameDemoMode() {
-		ballBounceAndDraw(); // for this game just let the ball bounce
+		rrMoveAndDraw(); // for this game just let the rr bounce
 
 		drawStringCentered(screenWidth/2,screenHeight/8,whiteCol,"Ronald Reagan");
 		drawStringCentered(screenWidth/2,screenHeight/8+8,redCol,"Saves America");
@@ -114,27 +142,27 @@ public class GamePlayRRSA : PixelScreenLib {
 		                   ""+ timerLeft);
 	}
 
-	// leftSideX, topSideY, int dim, Color32 useCol
-	void drawPlatform(int screenX, int screenY, int lengthOfPlatform) {
-		for(int i = 0; i < lengthOfPlatform; i++) {
-			drawBoxAt((screenX + i), screenY,3,yellowCol);
+	void moveAndDrawPlatforms() {
+
+		/*platformX += platSpeedX;
+		platformY += platSpeedY;
+
+		drawBoxAt((int)platformX, (int)platformY,(int)platformW,(int)platformH,yellowCol);*/
+
+		foreach( RRPlatform onePlat in platformList ) {
+			onePlat.x += platSpeedX;
+			// Debug.Log ( "X:"+(int)onePlat.x + " Y:" + (int)onePlat.y + " W:" + (int)onePlat.width + " H:" + (int)platformH );
+			drawBoxAt((int)onePlat.x, (int)onePlat.y,(int)onePlat.width,(int)platformH,yellowCol);
 		}
 	}
-	
-	void movePlatform(float platSpeedX, float platSpeedY) {
-		int lengthOfPlatform = 20;
-		drawPlatform ((int)platformX, (int)platSpeedY, lengthOfPlatform);
-	}
-
-
 
 	// seems like this is our main loop	
 	public override void PerGameLogic() {
 
 
-		ballBounceAndDraw();
+		rrMoveAndDraw();
 
-		movePlatform(platSpeedX, platSpeedY);
+		moveAndDrawPlatforms();
 
 
 		// Debugging screen
