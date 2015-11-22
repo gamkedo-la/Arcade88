@@ -7,7 +7,7 @@ public class ArcadePlayer : MonoBehaviour {
 	public GameObject parentDialog;
 	public TokenInteraction lastAdultSpokenTo;
 	public Text adultSays;
-	public Text kidSays;
+	private bool expectingResponse;
 
 	public static PlayableGame playingNow = null;
 
@@ -91,13 +91,18 @@ public class ArcadePlayer : MonoBehaviour {
 	}
 
 	// for adult dialog button
-	public void TokenInteractionWith() {
-		lastAdultSpokenTo.tokenExchange(this);
+	public void TokenInteractionWith(bool wasYesAnswered) {
 		parentDialog.SetActive(false);
 		hideMouse();
 		if(lastAdultSpokenTo.tag == "Parent") {
-			SoundCenter.instance.PlayClipOn( SoundCenter.instance.billGet,
-			                                transform.position, 1.0f);
+			if(expectingResponse == wasYesAnswered) {
+				lastAdultSpokenTo.tokenExchange(this);
+				SoundCenter.instance.PlayClipOn( SoundCenter.instance.billGet,
+				                                transform.position, 1.0f);
+			} else {
+				SoundCenter.instance.PlayClipOn( SoundCenter.instance.adultTalk,
+				                                transform.position, 1.0f);
+			}
 		}
 	}
 
@@ -170,11 +175,12 @@ public class ArcadePlayer : MonoBehaviour {
 					dialogLookFocus = rhInfo.collider.transform;
 
 					if(atScript) {
-						adultSays.text = atScript.theySay;
-						kidSays.text = atScript.playerSays;
+						QuestionOption grabQues = atScript.GetNextQues();
+						expectingResponse = grabQues.yesIsRight;
+						adultSays.text = grabQues.theyAsk +
+							"\n(Expecting: " + (expectingResponse ? "Yes" : "No")+")";
 					} else {
 						adultSays.text = "(Needs dialog data!)";
-						kidSays.text = "OK I'll add it";
 					}
 					SoundCenter.instance.PlayClipOn( SoundCenter.instance.adultTalk,
 					                                transform.position, 1.0f);
