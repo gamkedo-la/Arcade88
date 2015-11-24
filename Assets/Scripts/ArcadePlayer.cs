@@ -176,8 +176,17 @@ public class ArcadePlayer : MonoBehaviour {
 
 					if(atScript) {
 						QuestionOption grabQues = atScript.GetNextQues();
-						expectingResponse = grabQues.yesIsRight;
-						adultSays.text = grabQues.theyAsk +
+						int randNots = Random.Range(0,5);
+						expectingResponse = 
+							(randNots % 2 ==1 ? grabQues.yesIsRight == false :
+							 					grabQues.yesIsRight);
+
+						string notReplace = "";
+						for(int i=0;i<randNots;i++) {
+							notReplace += " not";
+						}
+						
+						adultSays.text = grabQues.theyAsk.Replace(" %NOTS%",notReplace) +
 							"\n(Expecting: " + (expectingResponse ? "Yes" : "No")+")";
 					} else {
 						adultSays.text = "(Needs dialog data!)";
