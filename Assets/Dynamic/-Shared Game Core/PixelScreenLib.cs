@@ -17,7 +17,7 @@ public class PixelScreenLib : GameManager {
 	protected int screenHeight; // cache
 
 	Color sharedColor;
-	
+
 	// Use this for initialization
 	void Start () {
 		// paintThis = Instantiate(GetComponent<Renderer>().material.mainTexture) as Texture2D;
@@ -64,7 +64,7 @@ public class PixelScreenLib : GameManager {
 		}
 	}
 
-	protected void copyBitmapFromToColorArray(int sX, int sY, // top left xy of corner in source
+	public void copyBitmapFromToColorArray(int sX, int sY, // top left xy of corner in source
 	                                          int sW, int sH, // width and height from source
 	                                          int dX, int dY, // destination x and y
 	                                          Color32[] src, // bitmap data

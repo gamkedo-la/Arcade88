@@ -23,7 +23,7 @@ public class GamePlay3 : PixelScreenLib {
 	}
 
 	public override void PerGameLogic() {
-		for(int i=0;i<1400;i++) {
+		for(int i=0;i<300;i++) {
 			float randX = Random.Range(0,screenWidth);
 			float randY = Random.Range(0,screenHeight);
 			drawBoxAt((int)randX,(int)randY,2,2,(Random.Range(0,10)<5 ? whiteCol : blackCol));

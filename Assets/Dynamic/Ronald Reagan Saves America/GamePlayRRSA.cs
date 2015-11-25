@@ -18,7 +18,7 @@ public class RRPlatform {
 
 public class GamePlayRRSA : PixelScreenLib {
 	public Texture2D rrImg;
-	Color32[] rrBitmap;
+	PixelSprite rrSprite;
 
 	float rrX = 25;
 	float rrY = 20;
@@ -36,7 +36,7 @@ public class GamePlayRRSA : PixelScreenLib {
 	float platformH = 14.0f;
 
 	public override void PerPixelGameBootup() {
-		rrBitmap = rrImg.GetPixels32();
+		rrSprite = new PixelSprite(rrImg);
 
 	}
 
@@ -77,17 +77,14 @@ public class GamePlayRRSA : PixelScreenLib {
 		if(rrY > screenHeight && rrYV > 0.0f) {
 			rrYV = 0.0f;
 			rrIsInAir = false;
-			Debug.Log ("Died");
+			// Debug.Log ("Died");
 		}
 
 		drawStickManAt((int)rrX,(int)rrY);
 	}
 
 	void drawStickManAt(int atX, int atY) {
-		copyBitmapFromToColorArray(0,0,
-		                           16, 16,
-		                           (int)rrX-8,(int)rrY-16,
-		                           rrBitmap,16);
+		rrSprite.drawImage(this, (int)rrX-8,(int)rrY-16);
 	}
 	
 	void Centerrr() {

@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour {
 	protected PlayableGame myCab;
 	protected bool flashing;
 
+	public static int animFrameStep;
+	
 	protected int score = 0;
 	protected int highScore = 0;
 
@@ -16,6 +18,13 @@ public class GameManager : MonoBehaviour {
 		score = 0;
 	}
 
+	IEnumerator stepAllAnims() {
+		while(true) {
+			animFrameStep++;
+			yield return new WaitForSeconds(0.2f);
+		}
+	}
+	
 	protected void addToScore(int scoreDelta) {
 		score += scoreDelta;
 		if(score > highScore) {
@@ -29,6 +38,7 @@ public class GameManager : MonoBehaviour {
 
 	void Start () {		
 		isPlaying = false;
+		StartCoroutine( stepAllAnims() );
 	}
 
 	public void Update() {

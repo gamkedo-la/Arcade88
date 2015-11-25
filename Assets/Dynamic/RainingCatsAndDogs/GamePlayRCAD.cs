@@ -2,15 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class BasicCharacter {
+public class FallingCatOrDog {
 	public float x,y;
 	public float xv,yv;
-	public Color32[] bmp;
+	public bool isFlipped;
+	public bool isDog;
 
-	public BasicCharacter(Color32[] useBmp) {
+	public FallingCatOrDog() {
 		x = y = 10;
 		xv = yv = 0;
-		bmp = useBmp;
+		isFlipped = (Random.Range(0,10)<5);
+		isDog = (Random.Range(0,10)<5);
 	}
 
 	public void SetPos(float sX, float sY) {
@@ -26,24 +28,24 @@ public class BasicCharacter {
 
 public class GamePlayRCAD : PixelScreenLib {
 	public Texture2D dodgerImg;
-	Color32[] dodgerBitmap;
+	private PixelSprite dodgerSprite;
 
 	public Texture2D catImg;
-	Color32[] catBitmap;
+	private PixelSprite catSprite;
 
 	public Texture2D dogImg;
-	Color32[] dogBitmap;
+	private PixelSprite dogSprite;
 
 	float playerX;
 	int playerY;
-	bool runLeft = false;
 
-	List<BasicCharacter> catsAndDogs = new List<BasicCharacter>();
+	List<FallingCatOrDog> catsAndDogs = new List<FallingCatOrDog>();
 
 	public override void PerPixelGameBootup() {
-		dodgerBitmap = dodgerImg.GetPixels32();
-		catBitmap = catImg.GetPixels32();
-		dogBitmap = dogImg.GetPixels32();
+		dodgerSprite = new PixelSprite(dodgerImg);
+		catSprite = new PixelSprite(catImg);
+		dogSprite = new PixelSprite(dogImg);
+
 		ResetAllEnemies();
 	}
 
@@ -53,14 +55,14 @@ public class GamePlayRCAD : PixelScreenLib {
 
 		if(Input.GetKey(KeyCode.LeftArrow) && playerX > playerEdgeMargin) {
 			playerX -= playerSpeed * Time.deltaTime;
-			runLeft = true;
+			dodgerSprite.isFacingLeft = true;
 		} else if(Input.GetKey(KeyCode.RightArrow) && playerX < screenWidth-1-playerEdgeMargin) {
 			playerX += playerSpeed * Time.deltaTime;
-			runLeft = false;
+			dodgerSprite.isFacingLeft = false;
 		}
 	}
 
-	void ResetEnemy(BasicCharacter enemy) {
+	void ResetEnemy(FallingCatOrDog enemy) {
 		float spawnMargin = 6;
 		enemy.SetPos( Random.Range( spawnMargin, screenWidth-1-spawnMargin),
 		             spawnMargin-Random.Range(0.0f,screenHeight));
@@ -72,23 +74,25 @@ public class GamePlayRCAD : PixelScreenLib {
 		catsAndDogs.Clear();
 		float spawnMargin = 6;
 		for(int i = 0; i<15; i++) {
-			BasicCharacter nextChar = 
-				new BasicCharacter(Random.Range(0,100)<50 ? dogBitmap : catBitmap);
+			FallingCatOrDog nextChar = new FallingCatOrDog();
 			ResetEnemy(nextChar);
 			catsAndDogs.Add( nextChar );
 		}
 	}
 
 	void MoveAndDrawEnemies() {
-		foreach(BasicCharacter catOrDog in catsAndDogs) {
+		foreach(FallingCatOrDog catOrDog in catsAndDogs) {
 			catOrDog.Move();
 			if(catOrDog.y >= screenHeight) {
 				ResetEnemy(catOrDog);
 			} else {
-				copyBitmapFromToColorArray(0,0,
-				                           16, 16,
-				                           (int)catOrDog.x-8,(int)catOrDog.y-8,
-				                           catOrDog.bmp,16);
+				if(catOrDog.isDog) {
+					dogSprite.isFacingLeft = catOrDog.isFlipped;
+					dogSprite.drawImage(this,(int)catOrDog.x-8,(int)catOrDog.y-8);
+				} else {
+					catSprite.isFacingLeft = catOrDog.isFlipped;
+					catSprite.drawImage(this,(int)catOrDog.x-8,(int)catOrDog.y-8);
+				}
 			}
 		}
 	}
@@ -124,10 +128,7 @@ public class GamePlayRCAD : PixelScreenLib {
 
 	public override void PerGameLogic() {
 		MoveAndDrawEnemies();
-		copyBitmapFromToColorArray(0,0,
-			                       16, 16,
-		                           (int)playerX-8,playerY-11,
-		                           dodgerBitmap,dodgerImg.width,0,runLeft);
+		dodgerSprite.drawImage(this,(int)playerX-8,playerY-11);
 	}
 	
 }
