@@ -22,7 +22,7 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 		disableAutoScreenClear = true; // sky and water
 
 		playerSprite = new PixelSprite(playerImg);
-		birdSprite = new PixelSprite(birdImg, 16,16); // each animation is 16 pixels wide
+		birdSprite = new PixelSprite(birdImg, 16); // each animation is 16 pixels wide
 		sharkSprite = new PixelSprite(sharkImg);
 	}
 

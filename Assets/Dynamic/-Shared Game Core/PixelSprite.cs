@@ -4,6 +4,7 @@ using System.Collections;
 public class PixelSprite {
 	public bool isAnimating = true; 
 	public bool isFacingLeft = false;
+	public int drawFrame = 0;
 
 	private Texture2D originalTexture;
 	private Color32[] pixelBuffer;
@@ -13,33 +14,34 @@ public class PixelSprite {
 	private int animFrames;
 
 	public PixelSprite(Texture2D useTexture,
-	                   int perPicWid=-1, int perPicHei=-1,
-	                   int srcX = 0,int srcY = 0) {
+	                   int perPicWid=-1) {
 		originalTexture = useTexture;
 		pixelBuffer = originalTexture.GetPixels32();
 
-		sourceTopLeftX = srcX;
-		sourceTopLeftY = srcY;
+		// (used to allow these to be passed in and optionally overriden, now we just assume 0,0 top)
+		sourceTopLeftX = 0;
+		sourceTopLeftY = 0;
 
 		if(perPicWid < 0) {
 			eachWid = originalTexture.width;
-			eachHei = originalTexture.height;
 			isAnimating = false; // single frame, no need to animate it
 		} else {
 			eachWid = perPicWid;
-			eachHei = perPicHei;
 		}
-
+		eachHei = originalTexture.height;
 		animFrames = originalTexture.width / eachWid;
 	}
 
 	public void drawImage(PixelScreenLib toSurface,
 	                      int xDest, int yDest) {
+		if(isAnimating) {
+			drawFrame = GameManager.animFrameStep % animFrames;
+		}
 		toSurface.copyBitmapFromToColorArray(sourceTopLeftX, sourceTopLeftY,
 		                                     eachWid, eachHei,
 		                                     xDest,yDest,
 		                                     pixelBuffer,originalTexture.width,
-		                                     (isAnimating ? GameManager.animFrameStep % animFrames : 0),
+		                                     drawFrame,
 		                                     isFacingLeft);
 	}
 
