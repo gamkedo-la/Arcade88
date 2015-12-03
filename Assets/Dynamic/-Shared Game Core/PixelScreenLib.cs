@@ -99,6 +99,48 @@ public class PixelScreenLib : GameManager {
 		for(int i=0;i<thisText.Length;i++) {
 			skipBy = 4; // default for 3 pixel wide text
 			switch(upperText[i]) {
+			case '?':dotGrid(fX,fY,
+				                 1,1,1,
+				                 0,0,1,
+				                 0,1,1,
+				                 0,0,0,
+				                 0,1,0);
+				break;
+			case ':':dotGrid(fX,fY,
+				                 0,0,0,
+				                 0,1,0,
+				                 0,0,0,
+				                 0,1,0,
+				                 0,0,0);
+				break;
+			case '\'':dotGrid(fX,fY,
+				                 0,1,0,
+				                 0,1,0,
+				                 0,0,0,
+				                 0,0,0,
+				                 0,0,0);
+				break;
+			case '.':dotGrid(fX,fY,
+				                  0,0,0,
+				                  0,0,0,
+				                  0,0,0,
+				                  0,0,0,
+				                  0,1,0);
+				break;
+			case ',':dotGrid(fX,fY,
+				                 0,0,0,
+				                 0,0,0,
+				                 0,0,0,
+				                 0,0,1,
+				                 0,1,0);
+				break;
+			case '!':dotGrid(fX,fY,
+				                 0,1,0,
+				                 0,1,0,
+				                 0,1,0,
+				                 0,0,0,
+				                 0,1,0);
+				break;
 			case '0':
 			case 'O':dotGrid(fX,fY,
 				        1,1,1,
