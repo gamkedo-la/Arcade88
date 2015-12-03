@@ -50,7 +50,7 @@ public class HatGame : PixelScreenLib {
 	public override void PerGameInput() {
 		if(gamePhase == HatGamePhase.EndScreen) {
 			if(Input.GetKeyDown(KeyCode.Space)) {
-				endOfPlayTime = Time.time;
+				InstantLoseFromTimeDrain();
 			}
 		}
 
@@ -168,6 +168,7 @@ public class HatGame : PixelScreenLib {
 			if(blinderSize >= blinderMax) {
 				blinderSize = blinderMax;
 				gamePhase = HatGamePhase.Shuffle;
+				selected = 1; // recenter
 				shuffleCount = shuffleTimes;
 			}
 		} else if(gamePhase == HatGamePhase.Reveal) {

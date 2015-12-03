@@ -18,6 +18,10 @@ public class GameManager : MonoBehaviour {
 		score = 0;
 	}
 
+	public void InstantLoseFromTimeDrain() {
+		endOfPlayTime = Time.time;
+	}
+
 	IEnumerator stepAllAnims() {
 		while(true) {
 			animFrameStep++;

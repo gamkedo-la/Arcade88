@@ -12,6 +12,7 @@ public class PixelScreenLib : GameManager {
 	protected Color redCol = new Color(1.0f, 0.0f, 0.0f);
 	protected Color yellowCol = new Color(1.0f, 1.0f, 0.0f);
 	protected Color greenCol = new Color(0.0f, 1.0f, 0.0f);
+	protected Color cyanCol = new Color(0.0f, 1.0f, 1.0f);
 
 	protected int screenWidth; // cache
 	protected int screenHeight; // cache
