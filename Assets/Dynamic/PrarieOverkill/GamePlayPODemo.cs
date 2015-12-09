@@ -1,48 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GamePlayPO : PixelScreenLib {
-
-	public Texture2D artMasterImg;
-	private PixelSprite playerPOSprite;
-	private PixelSprite buffaloSprite;
-	private PixelSprite treeSprite;
-
-	private int facingPosition; // 1-8, starting with left and moving clockwise
-
-	float playerX;
-	int playerY;
-
-
+public class GamePlayPODemo : PixelScreenLib {
 	float ballX = 25;
 	float ballY = 20;
 	float ballXV = 3.4f;
 	float ballYV = 1.4f;
 
 	public override void PerPixelGameBootup() {
-		playerPOSprite = new PixelSprite(artMasterImg);
-		buffaloSprite = new PixelSprite(artMasterImg);
-		treeSprite = new PixelSprite(artMasterImg);
 	}
 
 	public override void PerGameInput() {
-
-		// arrow keys set position frame 1 and then move after
-
-		if(Input.GetKey(KeyCode.LeftArrow)) { // Left
-			facingPosition = 1;
+		if(Input.GetKey(KeyCode.LeftArrow) && ballXV > 0.0f) {
+			ballXV *= -1.0f;
 		}
-		if(Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.UpArrow)) { // Up Left
-			facingPosition = 2;
+		if(Input.GetKey(KeyCode.RightArrow) && ballXV < 0.0f) {
+			ballXV *= -1.0f;
 		}
-		if(Input.GetKey(KeyCode.UpArrow)) { // Up
-			facingPosition = 3;
+		
+		if(Input.GetKey(KeyCode.UpArrow) && ballYV > 0.0f) {
+			ballYV *= -1.0f;
 		}
-		if(Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow)) { // Up Right
-			facingPosition = 4;
+		if(Input.GetKey(KeyCode.DownArrow) && ballYV < 0.0f) {
+			ballYV *= -1.0f;
 		}
-
-
 		if(Input.GetKeyDown(KeyCode.Space)) {
 			ballX = Random.Range(0.0f, screenWidth);
 			ballY = Random.Range(0.0f, screenHeight);
