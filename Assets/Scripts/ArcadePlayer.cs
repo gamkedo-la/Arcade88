@@ -81,6 +81,8 @@ public class ArcadePlayer : MonoBehaviour {
 
 			if( disclaimer.Length > 0 ) {
 				prevMsgReset = StartCoroutine( resetMessage() );
+			} else {
+				disclaimer = "\nSpacebar to Use";
 			}
 		}
 
