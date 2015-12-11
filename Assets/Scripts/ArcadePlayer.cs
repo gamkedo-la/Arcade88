@@ -188,8 +188,8 @@ public class ArcadePlayer : MonoBehaviour {
 							notReplace += " not";
 						}
 						
-						adultSays.text = grabQues.theyAsk.Replace(" %NOTS%",notReplace) +
-							"\n(Expecting: " + (expectingResponse ? "Yes" : "No")+")";
+						adultSays.text = grabQues.theyAsk.Replace(" %NOTS%",notReplace)/* +
+							"\n(Expecting: " + (expectingResponse ? "Yes" : "No")+")"*/;
 					} else {
 						adultSays.text = "(Needs dialog data!)";
 					}
