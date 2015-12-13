@@ -3,45 +3,105 @@ using System.Collections;
 
 public class GamePlayPO : PixelScreenLib {
 
-	public Texture2D artMasterImg;
+	enum direction {W, NW, N, NE, E, SE, S, SW};
+
+	public Texture2D playerImg;
+	public Texture2D buffaloImg;
+	public Texture2D treeImg;
 	private PixelSprite playerPOSprite;
-	private PixelSprite buffaloSprite;
-	private PixelSprite treeSprite;
+	private float pX;
+	private float pY;
+	//private PixelSprite buffaloSprite;
+	//private PixelSprite treeSprite;
 
-	private int facingPosition; // 1-8, starting with left and moving clockwise
-
-	float playerX;
-	int playerY;
-
+	private direction playerFacing; // 1-8, starting with left and moving clockwise
 
 	float ballX = 25;
 	float ballY = 20;
 	float ballXV = 3.4f;
 	float ballYV = 1.4f;
 
-	public override void PerPixelGameBootup() {
-		playerPOSprite = new PixelSprite(artMasterImg);
-		buffaloSprite = new PixelSprite(artMasterImg);
-		treeSprite = new PixelSprite(artMasterImg);
+	public override void PerPixelGameBootup() { // happens once per game universe
+		playerPOSprite = new PixelSprite(playerImg, 16);
+		playerPOSprite.isAnimating = false;
+		//buffaloSprite = new PixelSprite(buffaloImg);
+		//treeSprite = new PixelSprite(treeImg);
 	}
 
 	public override void PerGameInput() {
 
 		// arrow keys set position frame 1 and then move after
 
-		if(Input.GetKey(KeyCode.LeftArrow)) { // Left
-			facingPosition = 1;
+	
+		bool anyDirHeld = false;
+
+		if(Input.GetKey(KeyCode.LeftArrow)) { 
+			playerFacing = direction.W;
+			anyDirHeld = true;
 		}
-		if(Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.UpArrow)) { // Up Left
-			facingPosition = 2;
+		if(Input.GetKey(KeyCode.UpArrow)) { 
+			playerFacing = direction.N;
+			anyDirHeld = true;
 		}
-		if(Input.GetKey(KeyCode.UpArrow)) { // Up
-			facingPosition = 3;
+		if(Input.GetKey(KeyCode.RightArrow)) { 
+			playerFacing = direction.E;
+			anyDirHeld = true;
 		}
-		if(Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow)) { // Up Right
-			facingPosition = 4;
+		if(Input.GetKey(KeyCode.DownArrow)) { 
+			playerFacing = direction.S;
+			anyDirHeld = true;
+		}
+		if(Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.UpArrow)) { 
+			playerFacing = direction.NW;
+			anyDirHeld = true;
+		}
+		if(Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.DownArrow)) { 
+			playerFacing = direction.SW;
+			anyDirHeld = true;
+		}
+		if(Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.DownArrow)) { 
+			playerFacing = direction.SE;
+			anyDirHeld = true;
+		}
+		if(Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow)) { 
+			playerFacing = direction.NE;
+			anyDirHeld = true;
 		}
 
+		if (anyDirHeld){
+			switch (playerFacing){
+				case direction.W:
+					pX --;
+					break;
+				case direction.NW:
+					pX --;
+					pY --;
+					break;
+				case direction.N:
+					pY --;
+					break;	
+				case direction.NE:
+					pX ++;
+					pY --;
+					break;	
+				case direction.E:
+					pX ++;
+					break;
+				case direction.SE:
+					pX ++;
+					pY ++;
+					break;	
+				case direction.S:
+					pY ++;
+					break;
+				case direction.SW:
+					pX --;
+					pY ++;
+					break;				
+			}
+		}
+
+		playerPOSprite.drawFrame = (int)playerFacing;
 
 		if(Input.GetKeyDown(KeyCode.Space)) {
 			ballX = Random.Range(0.0f, screenWidth);
@@ -66,45 +126,22 @@ public class GamePlayPO : PixelScreenLib {
 			ballYV *= -1.0f;
 		}
 
-		drawStickManAt((int)ballX,(int)ballY);
+		playerPOSprite.drawImage(this, (int)pX, (int)pY);
 	}
 
-	void drawStickManAt(int atX, int atY) {
-		// head... stick
-		drawBoxAt(atX-1,atY-5,3,3,yellowCol);
-		safeDot(atX,atY-2,yellowCol);
-		// arms
-		safeDot(atX-2,atY,greenCol);
-		safeDot(atX-2,atY+1,greenCol);
-		safeDot(atX+2,atY,greenCol);
-		safeDot(atX+2,atY+1,greenCol);
-		// shoulders
-		safeDot(atX-1,atY-1,greenCol);
-		safeDot(atX+1,atY-1,greenCol);
-		// torso
-		safeDot(atX,atY-1,greenCol);
-		safeDot(atX,atY,greenCol);
-		safeDot(atX,atY+1,greenCol);
-		// legs
-		safeDot(atX-1,atY+2,greenCol);
-		safeDot(atX-1,atY+3,greenCol);
-		safeDot(atX-1,atY+4,greenCol);
-		safeDot(atX+1,atY+2,greenCol);
-		safeDot(atX+1,atY+3,greenCol);
-		safeDot(atX+1,atY+4,greenCol);
+
+
+	void CenterPlayer() {
+		pX = screenWidth/2;
+		pY = screenHeight/2;
 	}
 
-	void CenterBall() {
-		ballX = screenWidth/2;
-		ballY = screenHeight/2;
+	public override void PerGameStart() { // happens every time cabinet is started
+		CenterPlayer();
 	}
 
-	public override void PerGameStart() {
-		CenterBall();
-	}
-
-	public override void PerGameExit() {
-		CenterBall();
+	public override void PerGameExit() { // ever time game over
+		CenterPlayer();
 	}
 
 	public override void PerGameDemoMode() {
