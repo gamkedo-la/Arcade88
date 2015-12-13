@@ -104,7 +104,9 @@ public class ArcadePlayer : MonoBehaviour {
 				SoundCenter.instance.PlayClipOn( SoundCenter.instance.billGet,
 				                                transform.position, 1.0f);
 			} else {
-				gameOverMessage.SetActive(true);
+				if(gameOverMessage) {
+					gameOverMessage.SetActive(true);
+				}
 				// Application.LoadLevel( Application.loadedLevel );
 				SoundCenter.instance.PlayClipOn( SoundCenter.instance.adultTalk,
 				                                transform.position, 1.0f);
@@ -128,7 +130,9 @@ public class ArcadePlayer : MonoBehaviour {
 		hideMouse();
 		rb = GetComponent<Rigidbody>();
 		tokenBillsChange(1,0);
-		gameOverMessage.SetActive(false);
+		if(gameOverMessage) {
+			gameOverMessage.SetActive(false);
+		}
 	}
 
 	void LookToward(Transform thatObject) {
@@ -154,7 +158,7 @@ public class ArcadePlayer : MonoBehaviour {
 			Application.Quit();
 		}
 
-		if(gameOverMessage.activeSelf) {
+		if(gameOverMessage && gameOverMessage.activeSelf) {
 			if(Input.GetKeyDown(KeyCode.Space)) {
 				Application.LoadLevel(Application.loadedLevel);
 			}
@@ -238,7 +242,7 @@ public class ArcadePlayer : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if(gameOverMessage.activeSelf) {
+		if(gameOverMessage && gameOverMessage.activeSelf) {
 			return; // game frozen, player lost
 		}
 
