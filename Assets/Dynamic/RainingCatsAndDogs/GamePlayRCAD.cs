@@ -70,10 +70,16 @@ public class GamePlayRCAD : PixelScreenLib {
 		enemy.yv = Random.Range (2.0f,3.4f);
 	}
 
+	void addPet() {
+		FallingCatOrDog nextChar = new FallingCatOrDog();
+		ResetEnemy(nextChar);
+		catsAndDogs.Add( nextChar );
+	}
+
 	void ResetAllEnemies() {
 		catsAndDogs.Clear();
 		float spawnMargin = 6;
-		for(int i = 0; i<15; i++) {
+		for(int i = 0; i<10; i++) {
 			FallingCatOrDog nextChar = new FallingCatOrDog();
 			ResetEnemy(nextChar);
 			catsAndDogs.Add( nextChar );
@@ -86,6 +92,12 @@ public class GamePlayRCAD : PixelScreenLib {
 			if(catOrDog.y >= screenHeight) {
 				ResetEnemy(catOrDog);
 			} else {
+				if(catOrDog.y > playerY) {
+					if(Mathf.Abs(catOrDog.x - playerX) < 6) {
+						InstantLoseFromTimeDrain();
+					}
+				}
+
 				if(catOrDog.isDog) {
 					dogSprite.isFacingLeft = catOrDog.isFlipped;
 					dogSprite.drawImage(this,(int)catOrDog.x-8,(int)catOrDog.y-8);
@@ -95,6 +107,9 @@ public class GamePlayRCAD : PixelScreenLib {
 				}
 			}
 		}
+		drawStringCentered(screenWidth-15,5,yellowCol, "high");
+
+		drawStringCentered(screenWidth-15,15,yellowCol, ""+ highScore);
 	}
 
 	public override void PerGameStart() {
@@ -122,13 +137,22 @@ public class GamePlayRCAD : PixelScreenLib {
 	}
 
 	public override void PerGameTimerDisplay() {
-		drawStringCentered(screenWidth-15,15,whiteCol,
+		drawStringCentered(15,5,whiteCol, "time");
+		drawStringCentered(15,15,whiteCol,
 		                   ""+ timerLeft);
 	}
 
 	public override void PerGameLogic() {
+		if(catsAndDogs.Count < (playTime-timerLeft)) {
+			addPet();
+		}
+		if(score < ((endOfPlayTime-Time.time) * 100) ) {
+			addToScore(1);
+		}
 		MoveAndDrawEnemies();
 		dodgerSprite.drawImage(this,(int)playerX-8,playerY-11);
+		drawStringCentered(screenWidth+15,5,whiteCol, "score");
+		drawStringCentered(screenWidth+15,15,whiteCol, ""+ score);
 	}
 	
 }

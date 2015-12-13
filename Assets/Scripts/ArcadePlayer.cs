@@ -9,6 +9,8 @@ public class ArcadePlayer : MonoBehaviour {
 	public Text adultSays;
 	private bool expectingResponse;
 
+	public GameObject gameOverMessage;
+
 	public static PlayableGame playingNow = null;
 
 	Coroutine prevMsgReset = null;
@@ -102,6 +104,8 @@ public class ArcadePlayer : MonoBehaviour {
 				SoundCenter.instance.PlayClipOn( SoundCenter.instance.billGet,
 				                                transform.position, 1.0f);
 			} else {
+				gameOverMessage.SetActive(true);
+				// Application.LoadLevel( Application.loadedLevel );
 				SoundCenter.instance.PlayClipOn( SoundCenter.instance.adultTalk,
 				                                transform.position, 1.0f);
 			}
@@ -124,6 +128,7 @@ public class ArcadePlayer : MonoBehaviour {
 		hideMouse();
 		rb = GetComponent<Rigidbody>();
 		tokenBillsChange(1,0);
+		gameOverMessage.SetActive(false);
 	}
 
 	void LookToward(Transform thatObject) {
@@ -147,6 +152,13 @@ public class ArcadePlayer : MonoBehaviour {
 		if(Input.GetKey( KeyCode.Escape )) {
 			showMouse();
 			Application.Quit();
+		}
+
+		if(gameOverMessage.activeSelf) {
+			if(Input.GetKeyDown(KeyCode.Space)) {
+				Application.LoadLevel(Application.loadedLevel);
+			}
+			return; // game frozen, player lost
 		}
 
 		if(playingNow != null) {
@@ -209,7 +221,7 @@ public class ArcadePlayer : MonoBehaviour {
 						StopCoroutine(prevMsgReset);
 						playingNow = playScript;
 						playingNow.gameScreen.GameStart();
-						tokenBillText.text = ""+playingNow.gameName+"\nBACKSPACE: QUIT\n"+
+						tokenBillText.text = ""+playingNow.gameName.Replace("\\n","\n")+"\nBACKSPACE: QUIT\n"+
 							playingNow.gameInstructions.Replace("\\n","\n");
 					}
 				}
@@ -226,6 +238,10 @@ public class ArcadePlayer : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
+		if(gameOverMessage.activeSelf) {
+			return; // game frozen, player lost
+		}
+
 		if(parentDialog.activeSelf==false && playingNow == null) {
 			rb.velocity = transform.forward * Input.GetAxis("Vertical") * 5.0f;
 		}
