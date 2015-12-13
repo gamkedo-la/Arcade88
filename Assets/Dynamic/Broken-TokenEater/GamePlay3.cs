@@ -3,7 +3,16 @@ using System.Collections;
 
 public class GamePlay3 : PixelScreenLib {
 
+	Color[] grays = new Color[5];
+	int offCycle=0;
+
 	public override void PerPixelGameBootup() {
+		disableAutoScreenClear = true;
+
+		for(int i=0;i<grays.Length;i++) {
+			float fadeAmt = ((float)(i))/((float)(grays.Length));
+			grays[i] = new Color(fadeAmt,fadeAmt,fadeAmt);
+		}
 	}
 
 	public override void PerGameStart() {
@@ -23,19 +32,26 @@ public class GamePlay3 : PixelScreenLib {
 	}
 
 	public override void PerGameLogic() {
-		for(int i=0;i<300;i++) {
-			float randX = Random.Range(0,screenWidth);
-			float randY = Random.Range(0,screenHeight);
-			drawBoxAt((int)randX,(int)randY,2,2,(Random.Range(0,10)<5 ? whiteCol : blackCol));
+		int colCount = grays.Length;
+		for(int i=0;i<128;i++) {
+			for(int ii=0;ii<128;ii++) {
+				if(Random.Range(0,20)<8) {
+					screenBuffer[ i + (ii * screenWidth) ] = grays[Random.Range(0,colCount)];
+				}
+			}
 		}
 		
-		drawString(15,15,redCol,"1234567890");
+		drawString(15,15,redCol,"123456789ABCDEF");
 		drawString(15,35,yellowCol,"ABCDEFGHIJKLMNOPQRSTUVWXYZ");		
 	}
 
 	public override void PerGameDemoModeCoinRequestDisplay() {
 		if( flashing ) {
-			drawStringCentered(screenWidth/2,screenHeight/2,greenCol,"OUT OF ORDER");
+			drawStringCentered(screenWidth/2,screenHeight/2+1,blackCol,"OUT OF ORDER");
+			drawStringCentered(screenWidth/2,screenHeight/2-1,blackCol,"OUT OF ORDER");
+			drawStringCentered(screenWidth/2+1,screenHeight/2,blackCol,"OUT OF ORDER");
+			drawStringCentered(screenWidth/2-1,screenHeight/2,blackCol,"OUT OF ORDER");
+			drawStringCentered(screenWidth/2,screenHeight/2,whiteCol,"OUT OF ORDER");
 		}
 	}
 

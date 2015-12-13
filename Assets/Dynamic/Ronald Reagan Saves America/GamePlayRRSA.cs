@@ -41,9 +41,15 @@ public class GamePlayRRSA : PixelScreenLib {
 	}
 
 	public override void PerGameInput() {
-		if(Input.GetKeyDown(KeyCode.Space) && rrIsInAir == false) {
-			rrYV = -10.0f;
-			rrIsInAir = true;
+		if(rrIsInAir == false) {
+			if(Input.GetKeyDown(KeyCode.Space)) {
+				rrYV = -10.0f;
+				rrIsInAir = true;
+			}
+		} else if(rrYV<-1.5f) {
+			if(Input.GetKeyUp(KeyCode.Space)) {
+				rrYV = -1.5f;
+			}
 		}
 	}
 
@@ -53,18 +59,19 @@ public class GamePlayRRSA : PixelScreenLib {
 			rrYV += fakeGravity;
 		}
 
+		rrX += rrXV;
+		rrY += rrYV;
+
+		rrIsInAir = true;
 		foreach( RRPlatform onePlat in platformList ) {
 			if( rrX > onePlat.x && rrX < onePlat.x + onePlat.width &&
-			   rrY > onePlat.y && rrY < onePlat.y + platformH) {
+			   rrY >= onePlat.y && rrY < onePlat.y + platformH) {
 				rrIsInAir = false;
-				rrY = onePlat.y-1.0f;
+				rrY = onePlat.y;
 				rrYV = 0.0f;
 			}
 		}
 
-		rrX += rrXV;
-		rrY += rrYV;
-		
 		if(rrX < 0 && rrXV < 0.0f) {
 			rrXV *= -1.0f;
 		}
@@ -77,6 +84,7 @@ public class GamePlayRRSA : PixelScreenLib {
 		if(rrY > screenHeight && rrYV > 0.0f) {
 			rrYV = 0.0f;
 			rrIsInAir = false;
+			InstantLoseFromTimeDrain();
 			// Debug.Log ("Died");
 		}
 
@@ -103,7 +111,7 @@ public class GamePlayRRSA : PixelScreenLib {
 		float howLongIsNextPlatform;
 		float platformGap;
 		for(int i=0;i<10;i++) {
-			howLongIsNextPlatform = Random.Range(5,20);
+			howLongIsNextPlatform = Random.Range(10,25);
 			platformGap = Random.Range(8,12);
 
 			platformList.Add ( new RRPlatform(nextPlatformX,
@@ -135,7 +143,7 @@ public class GamePlayRRSA : PixelScreenLib {
 	}
 
 	public override void PerGameTimerDisplay() {
-		drawStringCentered(screenWidth/2,screenHeight/2+10,yellowCol,
+		drawStringCentered(screenWidth/2,10,yellowCol,
 		                   ""+ timerLeft);
 	}
 

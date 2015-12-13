@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PixelScreenLib : GameManager {
 	public Texture2D paintThis;
-	Color32[] screenBuffer;
+	protected Color32[] screenBuffer;
 
 	public Color bgCol = new Color(0.3f, 0.3f, 0.3f);
 	protected bool disableAutoScreenClear = false;
