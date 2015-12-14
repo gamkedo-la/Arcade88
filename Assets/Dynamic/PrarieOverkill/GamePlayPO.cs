@@ -6,15 +6,36 @@ public class GamePlayPO : PixelScreenLib {
 	enum direction {W, NW, N, NE, E, SE, S, SW};
 
 	public Texture2D playerImg;
+		private PixelSprite playerPOSprite;
+		private float pX;
+		private float pY;
+		private direction playerFacing;
+	
 	public Texture2D buffaloImg;
-	public Texture2D treeImg;
-	private PixelSprite playerPOSprite;
-	private float pX;
-	private float pY;
-	//private PixelSprite buffaloSprite;
-	//private PixelSprite treeSprite;
+		private PixelSprite buffaloSprite;
+		private float bX;
+		private float bY;
 
-	private direction playerFacing; // 1-8, starting with left and moving clockwise
+	public Texture2D laserImg;
+		private PixelSprite laserSprite1;
+		private PixelSprite laserSprite2;
+		private float l1X;
+		private float l1Y;
+		private float l2X;
+		private float l2Y;
+		private direction laser1Facing; 
+		private direction laser2Facing;
+		private bool laser1Ready;
+		private bool laser2Ready;
+
+	public Texture2D treeImg;
+		private PixelSprite treeSprite;
+		private float tX;
+		private float tY;
+
+	
+	
+	
 
 	float ballX = 25;
 	float ballY = 20;
@@ -23,9 +44,18 @@ public class GamePlayPO : PixelScreenLib {
 
 	public override void PerPixelGameBootup() { // happens once per game universe
 		playerPOSprite = new PixelSprite(playerImg, 16);
-		playerPOSprite.isAnimating = false;
-		//buffaloSprite = new PixelSprite(buffaloImg);
-		//treeSprite = new PixelSprite(treeImg);
+			playerPOSprite.isAnimating = false;
+
+		buffaloSprite = new PixelSprite(buffaloImg);
+			buffaloSprite.isAnimating = false;
+
+		treeSprite = new PixelSprite(treeImg);
+			treeSprite.isAnimating = false;
+
+		laserSprite1 = new PixelSprite(laserImg, 16);
+		laserSprite2 = new PixelSprite(laserImg, 16);
+			laserSprite1.isAnimating = false;
+			laserSprite2.isAnimating = false;
 	}
 
 	public override void PerGameInput() {
@@ -68,7 +98,7 @@ public class GamePlayPO : PixelScreenLib {
 			anyDirHeld = true;
 		}
 
-		if (anyDirHeld){
+		if (anyDirHeld){ // Player Movement
 			switch (playerFacing){
 				case direction.W:
 					pX --;
@@ -100,16 +130,89 @@ public class GamePlayPO : PixelScreenLib {
 					break;				
 			}
 		}
+		if(!laser1Ready){
+			switch (laser1Facing){
+				case direction.W:
+					l1X --;
+					break;
+				case direction.NW:
+					l1X --;
+					l1Y --;
+					break;
+				case direction.N:
+					l1Y --;
+					break;	
+				case direction.NE:
+					l1X ++;
+					l1Y --;
+					break;	
+				case direction.E:
+					l1X ++;
+					break;
+				case direction.SE:
+					l1X ++;
+					l1Y ++;
+					break;	
+				case direction.S:
+					l1Y ++;
+					break;
+				case direction.SW:
+					l1X --;
+					l1Y ++;
+					break;				
+			} // Laser 1 Movement
+		}
+		if(!laser2Ready){
+			switch (laser2Facing){
+				case direction.W:
+					l2X --;
+					break;
+				case direction.NW:
+					l2X --;
+					l2Y --;
+					break;
+				case direction.N:
+					l2Y --;
+					break;	
+				case direction.NE:
+					l2X ++;
+					l2Y --;
+					break;	
+				case direction.E:
+					l2X ++;
+					break;
+				case direction.SE:
+					l2X ++;
+					l2Y ++;
+					break;	
+				case direction.S:
+					l2Y ++;
+					break;
+				case direction.SW:
+					l2X --;
+					l2Y ++;
+					break;				
+			} // Laser 2 Movement
+		}
+		if(Input.GetKeyDown(KeyCode.Space)) {
+			FireLaser();
+		}
+		if(l1X < 0 || l1X > screenWidth || l1Y < 0 || l1Y > screenHeight)
+		{
+			laser1Ready = true;
+		}
+		if(l2X < 0 || l2X > screenWidth || l2Y < 0 || l2Y > screenHeight)
+		{
+			laser2Ready = true;
+		}
 
 		playerPOSprite.drawFrame = (int)playerFacing;
-
-		if(Input.GetKeyDown(KeyCode.Space)) {
-			ballX = Random.Range(0.0f, screenWidth);
-			ballY = Random.Range(0.0f, screenHeight);
-		}
+		laserSprite1.drawFrame = (int)laser1Facing;
+		laserSprite2.drawFrame = (int)laser2Facing;
+		
 	}
 
-	private void ballBounceAndDraw() {
+	private void Draw() {
 		ballX += ballXV;
 		ballY += ballYV;
 		
@@ -127,6 +230,29 @@ public class GamePlayPO : PixelScreenLib {
 		}
 
 		playerPOSprite.drawImage(this, (int)pX, (int)pY);
+		if(!laser1Ready){
+			laserSprite1.drawImage(this, (int)l1X, (int)l1Y);
+		}
+		if(!laser2Ready){
+			laserSprite2.drawImage(this, (int)l2X, (int)l2Y);
+		}
+		
+	}
+
+	private void FireLaser(){
+		if (laser1Ready){
+			l1X = pX;
+			l1Y = pY;
+			laser1Facing = playerFacing;
+			laser1Ready = false;
+		}
+		else if (laser2Ready){
+			l2X = pX;
+			l2Y = pY;
+			laser2Facing = playerFacing;
+			laser2Ready = false;
+		}
+
 	}
 
 
@@ -138,6 +264,8 @@ public class GamePlayPO : PixelScreenLib {
 
 	public override void PerGameStart() { // happens every time cabinet is started
 		CenterPlayer();
+		laser1Ready = true;
+		laser2Ready = true;
 	}
 
 	public override void PerGameExit() { // ever time game over
@@ -145,9 +273,9 @@ public class GamePlayPO : PixelScreenLib {
 	}
 
 	public override void PerGameDemoMode() {
-		ballBounceAndDraw(); // for this game just let the ball bounce
+		Draw(); // for this game just let the ball bounce
 
-		drawStringCentered(screenWidth/2,screenHeight/8,whiteCol,"PRARIE OVERKILL");
+		drawStringCentered(screenWidth/2,screenHeight/8,whiteCol,"PRAIRIE OVERKILL");
 		drawStringCentered(screenWidth/2,screenHeight/8+8,redCol,"9000 LBS OF BUFFALO");
 	}
 
@@ -163,7 +291,7 @@ public class GamePlayPO : PixelScreenLib {
 	}
 
 	public override void PerGameLogic() {
-		ballBounceAndDraw();
+		Draw();
 	}
 	
 }
