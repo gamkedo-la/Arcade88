@@ -11,10 +11,12 @@ public class TokenInteraction : MonoBehaviour {
 		pgScript = gameObject.GetComponent<PlayableGame>();
 	}
 
-	public void tokenExchange (ArcadePlayer interactor) {
+	public bool tokenExchange (ArcadePlayer interactor) {
 		if( interactor.tokenBillsChange(billDelta, tokenDelta) 
 		   && pgScript) {
-			pgScript.gameScreen.isPlaying = true;
+			// pgScript.gameScreen.isPlaying = true;
+			return true;
 		}
+		return false;
 	}
 }

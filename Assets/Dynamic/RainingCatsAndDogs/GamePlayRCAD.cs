@@ -49,16 +49,39 @@ public class GamePlayRCAD : PixelScreenLib {
 		ResetAllEnemies();
 	}
 
-	public override void PerGameInput() {
-		float playerSpeed = 23.0f;
-		float playerEdgeMargin = 5.0f;
+	float playerSpeed = 23.0f;
+	float playerEdgeMargin = 5.0f;
+	bool dodgeRight = true;
 
-		if(Input.GetKey(KeyCode.LeftArrow) && playerX > playerEdgeMargin) {
+	public override void PerGameFakeAIInput() {
+		if(dodgeRight) {
+			runRight();
+		} else {
+			runLeft();
+		}
+		if(Random.Range(0, 100) < 2) {
+			dodgeRight = !dodgeRight;
+		}
+	}
+
+	void runLeft() {
+		if(playerX > playerEdgeMargin) {
 			playerX -= playerSpeed * Time.deltaTime;
-			dodgerSprite.isFacingLeft = true;
-		} else if(Input.GetKey(KeyCode.RightArrow) && playerX < screenWidth-1-playerEdgeMargin) {
+		}
+		dodgerSprite.isFacingLeft = true;
+	}
+	void runRight() {
+		if(playerX < screenWidth - 1 - playerEdgeMargin) {
 			playerX += playerSpeed * Time.deltaTime;
-			dodgerSprite.isFacingLeft = false;
+		}
+		dodgerSprite.isFacingLeft = false;
+	}
+
+	public override void PerGameInput() {
+		if(Input.GetKey(KeyCode.LeftArrow)) {
+			runLeft();
+		} else if(Input.GetKey(KeyCode.RightArrow)) {
+			runRight();
 		}
 	}
 

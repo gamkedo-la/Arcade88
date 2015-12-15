@@ -33,6 +33,18 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 		gameSpeedMult = 1.0f;
 	}
 
+	public override void PerGameFakeAIInput() {
+		if(Mathf.Abs(playerX - enemyX) < collDist * 2 && Random.Range(0,100)<96) {
+			if(isBird) {
+				playerDodge = 1;
+			} else {
+				playerDodge = -1;
+			}
+		} else {
+			playerDodge = 0;
+		}
+	}
+
 	public override void PerGameInput() {
 		if(Input.GetKey(KeyCode.UpArrow)) {
 			playerDodge = -1;
@@ -86,12 +98,14 @@ public class GamePlaySurvivalSwim : PixelScreenLib {
 
 	public override void PerGameDemoMode() {
 		playerDodge = 0;
-		if(Mathf.Abs(playerX-enemyX)<collDist) {
+		if(Mathf.Abs(playerX - enemyX) < collDist) {
 			if(isBird) {
 				playerDodge = 1;
 			} else {
 				playerDodge = -1;
 			}
+		} else {
+			playerDodge = 0;
 		}
 
 		charactersDraw(); // for this game just let the ball bounce

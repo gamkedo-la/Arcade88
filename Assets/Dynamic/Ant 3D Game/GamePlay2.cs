@@ -28,9 +28,56 @@ public class GamePlay2 : GameManager {
 		footCorrected = Footprint3D.transform.position;
 	}
 
-	void Update() {
+	public override void PerGameFakeAIInput() {
+		footCorrected = Footprint3D.transform.localPosition;
+		if(stomping == 0) {
+			if(Random.Range(0, 100) < 95) {
+				if(footCorrected.x > antPos.x) {
+					footLeft();
+				} else {
+					footRight();
+				}
+				if(footCorrected.y > antPos.y) {
+					footUp();
+				} else {
+					footDown();
+				}
+				if(Random.Range(0, 100) < 4) {
+					stomping = 1;
+				}
+			}
+		}
+		StompUpdate();
+	}
+
+	new void Update() {
 		base.Update();
 		GameLogic(); // 3D game so it's running in Unity's components, no coroutine driving it
+	}
+
+	void footLeft() {
+		footCorrected += Vector3.left * Time.deltaTime * 0.7f;
+		if(footCorrected.x < -0.32f) {
+			footCorrected.x = -0.32f;
+		}
+	}
+	void footRight() {
+		footCorrected += Vector3.right * Time.deltaTime * 0.7f;
+		if(footCorrected.x > 0.32f) {
+			footCorrected.x = 0.32f;
+		}
+	}
+	void footUp() {
+		footCorrected += Vector3.up * Time.deltaTime * 0.5f;
+		if(footCorrected.y > 0.213f) {
+			footCorrected.y = 0.213f;
+		}
+	}
+	void footDown() {
+		footCorrected += Vector3.down * Time.deltaTime * 0.5f;
+		if(footCorrected.y < -0.213f) {
+			footCorrected.y = -0.213f;
+		}
 	}
 
 	public override void PerGameInput() {
@@ -38,29 +85,16 @@ public class GamePlay2 : GameManager {
 
 		if(stomping == 0) {
 			if(Input.GetKey(KeyCode.LeftArrow)) {
-				footCorrected += Vector3.left * Time.deltaTime * 0.7f;
-				if(footCorrected.x < -0.32f) {
-					footCorrected.x = -0.32f;
-				}
+				footLeft();
 			}
 			if(Input.GetKey(KeyCode.RightArrow)) {
-				footCorrected += Vector3.right * Time.deltaTime * 0.7f;
-				if(footCorrected.x > 0.32f) {
-					footCorrected.x = 0.32f;
-				}
+				footRight();
 			}
-			
 			if(Input.GetKey(KeyCode.UpArrow)) {
-				footCorrected += Vector3.up * Time.deltaTime * 0.5f;
-				if(footCorrected.y > 0.213f) {
-					footCorrected.y = 0.213f;
-				}
+				footUp();
 			}
 			if(Input.GetKey(KeyCode.DownArrow)) {
-				footCorrected += Vector3.down * Time.deltaTime * 0.5f;
-				if(footCorrected.y < -0.213f) {
-					footCorrected.y = -0.213f;
-				}
+				footDown();
 			}
 
 			Debug.Log(footCorrected.x);
@@ -70,6 +104,10 @@ public class GamePlay2 : GameManager {
 			}
 		}
 
+		StompUpdate();
+	}
+
+	void StompUpdate() {
 		footCorrected.z += Time.deltaTime*stomping*5.0f;
 
 		if(stomping > 0) {

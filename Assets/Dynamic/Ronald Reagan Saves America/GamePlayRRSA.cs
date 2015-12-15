@@ -40,6 +40,17 @@ public class GamePlayRRSA : PixelScreenLib {
 
 	}
 
+	public override void PerGameFakeAIInput() {
+		if(Random.Range(0, 100) < 10) {
+			if(rrIsInAir == false) {
+				rrYV = -10.0f;
+				rrIsInAir = true;
+			} else if(rrYV<-1.5f) {
+				rrYV = -1.5f;
+			}
+		}
+	}
+
 	public override void PerGameInput() {
 		if(rrIsInAir == false) {
 			if(Input.GetKeyDown(KeyCode.Space)) {

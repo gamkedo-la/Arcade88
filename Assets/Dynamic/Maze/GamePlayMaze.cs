@@ -13,6 +13,31 @@ public class GamePlayMaze : PixelScreenLib {
 		mazeBitmap = mazeImg.GetPixels32();
 	}
 
+	int aiDX=0;
+	int aiDY=1;
+	public override void PerGameFakeAIInput() {
+		int nextX = dotX+aiDX;
+		int nextY = dotY+aiDY;
+
+		if(AttemptMoveTo(nextX, nextY) == false || Random.Range(0,60)<2) {
+			aiDX = aiDY = 0;
+			switch(Random.Range(0, 4)) {
+			case 0:
+				aiDX = 1;
+				break;
+			case 1:
+				aiDX = -1;
+				break;
+			case 2:
+				aiDY = 1;
+				break;
+			case 3:
+				aiDY = -1;
+				break;
+			}
+		}
+	}
+
 	public override void PerGameInput() {
 		int nextX = dotX;
 		int nextY = dotY;
@@ -35,11 +60,16 @@ public class GamePlayMaze : PixelScreenLib {
 			nextY++;
 		}
 
+		AttemptMoveTo(nextX, nextY);
+	}
+
+	private bool AttemptMoveTo(int nextX, int nextY) {
 		Color32 destCol = getBitmapColor(nextX,nextY,mazeBitmap, mazeImg.width, mazeImg.height);
 
 		if( destCol == blackCol ) {
 			dotX = nextX;
 			dotY = nextY;
+			return true;
 		} else if( destCol == greenCol ) {
 			addToScore( (int) ((endOfPlayTime-Time.time) * 100) );
 			if(timerLeft >= 10) {
@@ -48,6 +78,7 @@ public class GamePlayMaze : PixelScreenLib {
 			dotX = nextX;
 			dotY = nextY;
 		}
+		return false;
 	}
 
 	private void drawMaze() {

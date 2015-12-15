@@ -98,7 +98,7 @@ public class ArcadePlayer : MonoBehaviour {
 	public void TokenInteractionWith(bool wasYesAnswered) {
 		parentDialog.SetActive(false);
 		hideMouse();
-		if(lastAdultSpokenTo.tag == "Parent") {
+		// if(lastAdultSpokenTo.tag == "Parent") {
 			if(expectingResponse == wasYesAnswered) {
 				lastAdultSpokenTo.tokenExchange(this);
 				SoundCenter.instance.PlayClipOn( SoundCenter.instance.billGet,
@@ -111,7 +111,7 @@ public class ArcadePlayer : MonoBehaviour {
 				SoundCenter.instance.PlayClipOn( SoundCenter.instance.adultTalk,
 				                                transform.position, 1.0f);
 			}
-		}
+		// }
 	}
 
 	void hideMouse() {
@@ -150,6 +150,18 @@ public class ArcadePlayer : MonoBehaviour {
 		                                   sameHeightFix,
 		                                   Time.deltaTime);
 	}
+
+	IEnumerator StartGameInAMoment(PlayableGame playScript) {
+		yield return new WaitForSeconds(0.05f); // keeps spacebar from counting as input on this game
+		playScript.playerHere = gameObject;
+		if(prevMsgReset != null) {
+			StopCoroutine(prevMsgReset);
+		}
+		playingNow = playScript;
+		playingNow.gameScreen.GameStart();
+		tokenBillText.text = "" + playingNow.gameName.Replace("\\n", "\n") + "\nBACKSPACE: QUIT\n" +
+			playingNow.gameInstructions.Replace("\\n", "\n");
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -171,6 +183,10 @@ public class ArcadePlayer : MonoBehaviour {
 
 			if(Input.GetKeyDown(KeyCode.Backspace) || playingNow.gameScreen.isPlaying == false) {
 				// playingNow.gameScreen.isPlaying = false; // nah, leave it running but cease input!
+
+				PlayerDistrib.instance.Shuffle(); // BEFORE releasing player assignment, or it may appear here
+				playingNow.playerHere = null; // freeing up player assignment AFTER the shuffle
+
 				playingNow = null;
 				tokenBillsChange(0,0);
 			}
@@ -214,19 +230,26 @@ public class ArcadePlayer : MonoBehaviour {
 				} else {
 					TokenInteraction tiScript = rhInfo.collider.GetComponent<TokenInteraction>();
 					int hadTokens = tokens;
-					if(tiScript) {
-						tiScript.tokenExchange(this);
-					} else {
-						Debug.Log("Touched: " + rhInfo.collider.name);
-					}
+
 					PlayableGame playScript = rhInfo.collider.GetComponent<PlayableGame>();
 
-					if(playScript && hadTokens > tokens) {
-						StopCoroutine(prevMsgReset);
-						playingNow = playScript;
-						playingNow.gameScreen.GameStart();
-						tokenBillText.text = ""+playingNow.gameName.Replace("\\n","\n")+"\nBACKSPACE: QUIT\n"+
-							playingNow.gameInstructions.Replace("\\n","\n");
+					float distFromFront = Vector3.Distance(transform.position,
+						playScript.gameScreen.myCab.standHere.position);
+					
+					if(distFromFront < 1.5f && playScript.playerHere == null) {
+						bool hadTheMoney = false;
+						if(playScript.gameScreen.isPlaying) {
+							hadTheMoney = true;
+							Debug.Log("no tokens needed, already in play");
+						} else if(tiScript) {
+							hadTheMoney = tiScript.tokenExchange(this);
+						} else {
+							Debug.Log("Touched: " + rhInfo.collider.name);
+						}
+
+						if(playScript && hadTheMoney) {
+							StartCoroutine(StartGameInAMoment(playScript));
+						}
 					}
 				}
 			} else {

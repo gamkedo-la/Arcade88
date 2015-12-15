@@ -16,11 +16,11 @@ public class GamePlay3 : PixelScreenLib {
 	}
 
 	public override void PerGameStart() {
-		Debug.Log ("No game init needed for broken game");
+		// Debug.Log ("No game init needed for broken game");
 	}
 
 	public override void PerGameExit() {
-		Debug.Log ("No game exit needed for broken game");
+		// Debug.Log ("No game exit needed for broken game");
 	}
 		
 	public override void PerGameInput() {

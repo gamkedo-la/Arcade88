@@ -47,6 +47,36 @@ public class HatGame : PixelScreenLib {
 		}
 	}
 
+	void cycleLeft() {
+		selected--;
+		if(selected < 0) {
+			selected += 3;
+		}
+	}
+	void cycleRight() {
+		selected++;
+		if(selected >= 3) {
+			selected -= 3;
+		}
+	}
+
+	public override void PerGameFakeAIInput() {
+		if(gamePhase != HatGamePhase.Choose) {
+			return;
+		}
+
+		if(Random.Range(0,70)<2) {
+			cycleLeft();
+		}
+		if(Random.Range(0,70)<2) {
+			cycleRight();
+		}
+
+		if(timerLeft < 10) {
+			gamePhase = HatGamePhase.Reveal;
+		}
+	}
+
 	public override void PerGameInput() {
 		if(gamePhase == HatGamePhase.EndScreen) {
 			if(Input.GetKeyDown(KeyCode.Space)) {
@@ -59,16 +89,10 @@ public class HatGame : PixelScreenLib {
 		}
 
 		if(Input.GetKeyDown(KeyCode.LeftArrow)) {
-			selected--;
-			if(selected < 0) {
-				selected += 3;
-			}
+			cycleLeft();
 		}
 		if(Input.GetKeyDown(KeyCode.RightArrow)) {
-			selected++;
-			if(selected >= 3) {
-				selected -= 3;
-			}
+			cycleRight();
 		}
 
 		if(Input.GetKeyDown(KeyCode.Space)) {

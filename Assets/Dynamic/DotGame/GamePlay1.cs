@@ -37,6 +37,15 @@ public class GamePlay1 : PixelScreenLib {
 	public override void PerPixelGameBootup() {
 	}
 
+	public override void PerGameFakeAIInput() {
+		if(Random.Range(0, 100) < 2) {
+			ballXV *= -1.0f;
+		}
+		if(Random.Range(0, 100) < 2) {
+			ballYV *= -1.0f;
+		}
+	}
+
 	public override void PerGameInput() {
 		if(Input.GetKey(KeyCode.LeftArrow) && ballXV > 0.0f) {
 			ballXV *= -1.0f;

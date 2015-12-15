@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour {
 	public float playTime = 4.0f;
 	protected float endOfPlayTime;
 	protected int timerLeft = 0;
-	protected PlayableGame myCab;
+	public PlayableGame myCab;
 	protected bool flashing;
 
 	public static int animFrameStep;
@@ -40,21 +40,31 @@ public class GameManager : MonoBehaviour {
 		myCab = cabinet;
 	}
 
-	void Start () {		
+	void Awake () {		
 		isPlaying = false;
 		StartCoroutine( stepAllAnims() );
 	}
 
 	public void Update() {
-		if(ArcadePlayer.playingNow && ArcadePlayer.playingNow.gameScreen == this) {
-			PerGameInput();
+		if(isPlaying && myCab.playerHere != null) {
+			if(ArcadePlayer.playingNow && ArcadePlayer.playingNow.gameScreen == this) {
+				PerGameInput();
+			} else {
+				PerGameFakeAIInput();
+			}
 		}
 	}
 
 	public void GameStart() {
-		endOfPlayTime = Time.time + playTime;
-		clearScore();
-		PerGameStart();
+		if(isPlaying == false) {
+			Debug.Log("starting play for: " + myCab.gameName);
+			endOfPlayTime = Time.time + playTime;
+			clearScore();
+			PerGameStart();
+			isPlaying = true;
+		} else {
+			Debug.Log("Resuming Play for: " + myCab.gameName);
+		}
 	}
 
 	public void GameLogic() {
@@ -64,7 +74,12 @@ public class GameManager : MonoBehaviour {
 			if(timerLeft<=0) {
 				timerLeft = 0; // guarding against some rounding error going negative
 				PerGameExit();
-				isPlaying = false; // will return to PerGameDemoMode, need a gameOver timer though
+
+				isPlaying = false; // will return to PerGameDemoMode
+
+				if(myCab.playerHere && myCab.playerHere != PlayerDistrib.instance.player) {
+					GameStart(); // reset!
+				}
 			} else {
 				PerGameLogic();
 				PerGameTimerDisplay();
@@ -108,6 +123,11 @@ public class GameManager : MonoBehaviour {
 	public virtual void PerGameInput() {
 		Debug.Log (myCab.gameName +
 		           ": Each game should override PerGameInput");
+	}
+
+	public virtual void PerGameFakeAIInput() {
+		/*Debug.Log (myCab.gameName +
+			": Each game should override PerGameFakeAIInput"); */
 	}
 
 }

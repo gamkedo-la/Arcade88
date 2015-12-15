@@ -20,7 +20,7 @@ public class PixelScreenLib : GameManager {
 	Color sharedColor;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		// paintThis = Instantiate(GetComponent<Renderer>().material.mainTexture) as Texture2D;
     	// GetComponent<Renderer>().material.mainTexture = paintThis;
 		
