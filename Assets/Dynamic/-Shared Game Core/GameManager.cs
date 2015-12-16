@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour {
 	public PlayableGame myCab;
 	protected bool flashing;
 
+	public bool triedThisYet = false;
+
 	public static int animFrameStep;
 	
 	protected int score = 0;
@@ -56,6 +58,13 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void GameStart() {
+		if(ArcadePlayer.playingNow && ArcadePlayer.playingNow.gameScreen == this) {
+			if(triedThisYet == false) {
+				ArcadePlayer.ticketNum++;
+				triedThisYet = true;
+			}
+		}
+
 		if(isPlaying == false) {
 			//Debug.Log("starting play for: " + myCab.gameName);
 			endOfPlayTime = Time.time + playTime;

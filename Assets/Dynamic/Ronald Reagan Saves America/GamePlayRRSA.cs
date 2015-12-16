@@ -50,7 +50,7 @@ public class GamePlayRRSA : PixelScreenLibBigText {
 			if(rrIsInAir == false) {
 				rrYV = -40.0f;
 				rrIsInAir = true;
-			} else if(rrYV<-4.5f) {
+			} else if(Random.Range(0, 100) < 20 && rrYV<-4.5f) {
 				rrYV = -4.5f;
 			}
 		}

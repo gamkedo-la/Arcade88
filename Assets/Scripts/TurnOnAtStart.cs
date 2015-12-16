@@ -5,6 +5,8 @@ public class TurnOnAtStart : MonoBehaviour {
 	public GameObject toEnable;
 
 	void Awake() {
-		toEnable.SetActive(true);
+		if(toEnable) {
+			toEnable.SetActive(true);
+		}
 	}
 }

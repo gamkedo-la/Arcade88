@@ -8,6 +8,12 @@ public class PlayerDistrib : MonoBehaviour {
 
 	public GameObject player; // to never get reassigned by code
 
+	public void ForgetIfTried() {
+		for(int i = 0; i < cabinetsList.Length; i++) {
+			cabinetsList[i].gameScreen.triedThisYet = false;
+		}
+	}
+
 	public void Shuffle() {
 		for(int i = 0; i < cabinetsList.Length; i++) {
 			if(cabinetsList[i].playerHere && cabinetsList[i].playerHere != player) {

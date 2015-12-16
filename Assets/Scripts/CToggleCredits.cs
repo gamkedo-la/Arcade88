@@ -5,7 +5,7 @@ using System.Collections;
 public class CToggleCredits : MonoBehaviour {
 	Text creditsText;
 	string fullCredits = "";
-	string placeholderInstruction = "C to Toggle Credits";
+	string placeholderInstruction = "H to Toggle Help";
 	bool showingCredits = false;
 
 	// Use this for initialization
@@ -17,7 +17,7 @@ public class CToggleCredits : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(Input.GetKeyDown(KeyCode.C)) {
+		if(Input.GetKeyDown(KeyCode.H)) {
 			showingCredits = !showingCredits;
 			if(showingCredits) {
 				creditsText.text = fullCredits + "\n"+placeholderInstruction;

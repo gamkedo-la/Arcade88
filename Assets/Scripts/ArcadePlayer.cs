@@ -8,8 +8,10 @@ public class ArcadePlayer : MonoBehaviour {
 	public TokenInteraction lastAdultSpokenTo;
 	public Text adultSays;
 	private bool expectingResponse;
+	public int allGameCount = 9;
 
 	public GameObject gameOverMessage;
+	public GameObject winMessage;
 
 	public static PlayableGame playingNow = null;
 
@@ -18,7 +20,7 @@ public class ArcadePlayer : MonoBehaviour {
 	public Transform dialogLookFocus;
 
 	Rigidbody rb;
-	public int ticketNum = 0;
+	public static int ticketNum = 0;
 	public int bills = 0;
 	public int tokens = 0;
 
@@ -84,12 +86,14 @@ public class ArcadePlayer : MonoBehaviour {
 			if( disclaimer.Length > 0 ) {
 				prevMsgReset = StartCoroutine( resetMessage() );
 			} else {
-				disclaimer = "\nSpacebar to Use";
+				disclaimer = "";//"\nSpacebar to Use";
 			}
 		}
 
-		tokenBillText.text = "Tickets: " +ticketNum+"\nBills: $" + bills +
+		if(tokenBillText) {
+			tokenBillText.text = "Games Tried: " + ticketNum + "/"+allGameCount+"\nBills: $" + bills +
 			"\nTokens: " + tokens + disclaimer;
+		}
 
 		return hadEnoughTokens;
 	}
@@ -128,12 +132,16 @@ public class ArcadePlayer : MonoBehaviour {
 
 	// Use this for initialization
 	void Start() {
+		ticketNum = 0; // forget how many games tried
 		baseFOV = Camera.main.fieldOfView;
 		hideMouse();
 		rb = GetComponent<Rigidbody>();
 		tokenBillsChange(1,0);
 		if(gameOverMessage) {
 			gameOverMessage.SetActive(false);
+		}
+		if(winMessage) {
+			winMessage.SetActive(false);
 		}
 	}
 
@@ -172,7 +180,8 @@ public class ArcadePlayer : MonoBehaviour {
 			Application.Quit();
 		}
 
-		if(gameOverMessage && gameOverMessage.activeSelf) {
+		if((gameOverMessage && gameOverMessage.activeSelf) ||
+			(winMessage && winMessage.activeSelf)) {
 			if(Input.GetKeyDown(KeyCode.Space)) {
 				Application.LoadLevel(Application.loadedLevel);
 			}
@@ -191,11 +200,17 @@ public class ArcadePlayer : MonoBehaviour {
 
 				playingNow = null;
 				tokenBillsChange(0,0);
+
+				if(ticketNum == allGameCount) {
+					if(winMessage) {
+						winMessage.SetActive(true);
+					}
+				}
 			}
 			return;
 		}
 
-		if(parentDialog.activeSelf) {
+		if(parentDialog && parentDialog.activeSelf) {
 			LookToward(dialogLookFocus.transform);
 			return; // freeze while in dialog
 		}
@@ -282,11 +297,12 @@ public class ArcadePlayer : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-		if(gameOverMessage && gameOverMessage.activeSelf) {
+		if((gameOverMessage && gameOverMessage.activeSelf) ||
+			(winMessage && winMessage.activeSelf)) {
 			return; // game frozen, player lost
 		}
 
-		if(parentDialog.activeSelf==false && playingNow == null) {
+		if(parentDialog == null || (parentDialog.activeSelf==false && playingNow == null)) {
 			rb.velocity = transform.forward * Input.GetAxis("Vertical") * 5.0f;
 		}
 
