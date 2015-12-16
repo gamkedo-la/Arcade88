@@ -57,13 +57,13 @@ public class GameManager : MonoBehaviour {
 
 	public void GameStart() {
 		if(isPlaying == false) {
-			Debug.Log("starting play for: " + myCab.gameName);
+			//Debug.Log("starting play for: " + myCab.gameName);
 			endOfPlayTime = Time.time + playTime;
 			clearScore();
 			PerGameStart();
 			isPlaying = true;
 		} else {
-			Debug.Log("Resuming Play for: " + myCab.gameName);
+			//Debug.Log("Resuming Play for: " + myCab.gameName);
 		}
 	}
 

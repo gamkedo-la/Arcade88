@@ -97,8 +97,6 @@ public class GamePlay2 : GameManager {
 				footDown();
 			}
 
-			Debug.Log(footCorrected.x);
-
 			if(Input.GetKeyDown(KeyCode.Space)) {
 				stomping = 1;
 			}

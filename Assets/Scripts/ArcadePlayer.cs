@@ -100,7 +100,9 @@ public class ArcadePlayer : MonoBehaviour {
 		hideMouse();
 		// if(lastAdultSpokenTo.tag == "Parent") {
 			if(expectingResponse == wasYesAnswered) {
-				lastAdultSpokenTo.tokenExchange(this);
+				if(lastAdultSpokenTo) {
+					lastAdultSpokenTo.tokenExchange(this);
+				}
 				SoundCenter.instance.PlayClipOn( SoundCenter.instance.billGet,
 				                                transform.position, 1.0f);
 			} else {
@@ -228,17 +230,32 @@ public class ArcadePlayer : MonoBehaviour {
 					SoundCenter.instance.PlayClipOn( SoundCenter.instance.adultTalk,
 					                                transform.position, 1.0f);
 				} else {
-					TokenInteraction tiScript = rhInfo.collider.GetComponent<TokenInteraction>();
 					int hadTokens = tokens;
 
 					PlayableGame playScript = rhInfo.collider.GetComponent<PlayableGame>();
 
-					float distFromFront = Vector3.Distance(transform.position,
-						playScript.gameScreen.myCab.standHere.position);
+					TokenInteraction tiScript = rhInfo.collider.GetComponent<TokenInteraction>();
+
+					if(tiScript == null) {
+						return;
+					}
+
+					float distFromFront;
+
+					if(playScript) {
+						if(playScript.playerHere != null) {
+							distFromFront = 500.0f;
+						} else {
+							distFromFront = Vector3.Distance(transform.position,
+								playScript.gameScreen.myCab.standHere.position);
+						}
+					} else {
+						distFromFront = 0.0f;
+					}
 					
-					if(distFromFront < 1.5f && playScript.playerHere == null) {
+					if(distFromFront < 1.5f) {
 						bool hadTheMoney = false;
-						if(playScript.gameScreen.isPlaying) {
+						if(playScript && playScript.gameScreen.isPlaying) {
 							hadTheMoney = true;
 							Debug.Log("no tokens needed, already in play");
 						} else if(tiScript) {

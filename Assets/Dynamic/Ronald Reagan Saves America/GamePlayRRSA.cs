@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class RRPlatform {
 	public float x,y, width;
 
+	public RRPlatform() {
+	}
 	public RRPlatform(float startX, float startY, float myWidth) {
 		x = startX;
 		y = startY;
@@ -16,7 +18,9 @@ public class RRPlatform {
 	}
 }
 
-public class GamePlayRRSA : PixelScreenLib {
+public class GamePlayRRSA : PixelScreenLibBigText {
+	public Texture2D truefaceImg;
+	PixelSprite truefaceSprite;
 	public Texture2D rrImg;
 	PixelSprite rrSprite;
 
@@ -25,28 +29,29 @@ public class GamePlayRRSA : PixelScreenLib {
 	float rrXV = 3.4f;
 	float rrYV = 1.4f;
 
-	float fakeGravity = 0.9f;
+	float fakeGravity = 3.1f;
 
 	bool rrIsInAir = false;
 
 	List<RRPlatform> platformList = new List<RRPlatform>();
+	List<RRPlatform> platformSpares = new List<RRPlatform>();
 
 	// universal shared platform values
 	float platSpeedX = 1;
-	float platformH = 14.0f;
+	float platformH = 14.0f*5.0f;
 
 	public override void PerPixelGameBootup() {
 		rrSprite = new PixelSprite(rrImg);
-
+		truefaceSprite = new PixelSprite(truefaceImg);
 	}
 
 	public override void PerGameFakeAIInput() {
 		if(Random.Range(0, 100) < 10) {
 			if(rrIsInAir == false) {
-				rrYV = -10.0f;
+				rrYV = -40.0f;
 				rrIsInAir = true;
-			} else if(rrYV<-1.5f) {
-				rrYV = -1.5f;
+			} else if(rrYV<-4.5f) {
+				rrYV = -4.5f;
 			}
 		}
 	}
@@ -54,12 +59,12 @@ public class GamePlayRRSA : PixelScreenLib {
 	public override void PerGameInput() {
 		if(rrIsInAir == false) {
 			if(Input.GetKeyDown(KeyCode.Space)) {
-				rrYV = -10.0f;
+				rrYV = -40.0f;
 				rrIsInAir = true;
 			}
-		} else if(rrYV<-1.5f) {
+		} else if(rrYV<-4.5f) {
 			if(Input.GetKeyUp(KeyCode.Space)) {
-				rrYV = -1.5f;
+				rrYV = -4.5f;
 			}
 		}
 	}
@@ -75,8 +80,10 @@ public class GamePlayRRSA : PixelScreenLib {
 
 		rrIsInAir = true;
 		foreach( RRPlatform onePlat in platformList ) {
-			if( rrX > onePlat.x && rrX < onePlat.x + onePlat.width &&
-			   rrY >= onePlat.y && rrY < onePlat.y + platformH) {
+			if( (rrX-10 > onePlat.x && rrX-10 < onePlat.x + onePlat.width &&
+				rrY >= onePlat.y && rrY < onePlat.y + platformH) ||
+				(rrX+10 > onePlat.x && rrX+10 < onePlat.x + onePlat.width &&
+					rrY >= onePlat.y && rrY < onePlat.y + platformH)) {
 				rrIsInAir = false;
 				rrY = onePlat.y;
 				rrYV = 0.0f;
@@ -99,35 +106,47 @@ public class GamePlayRRSA : PixelScreenLib {
 			// Debug.Log ("Died");
 		}
 
-		drawStickManAt((int)rrX,(int)rrY);
+		rrSprite.drawImage(this, (int)rrX-32,(int)rrY-64);
 	}
 
-	void drawStickManAt(int atX, int atY) {
-		rrSprite.drawImage(this, (int)rrX-8,(int)rrY-16);
-	}
-	
 	void Centerrr() {
 		rrX = screenWidth/4;
 		rrY = screenHeight/2;
 		rrXV = 0.0f;
 		rrYV = 0.0f;
 
-		platSpeedX = -1;
+		platSpeedX = -5;
+	}
+
+	int platLong() {
+		return Random.Range(21, 35) * 4;
+	}
+	int platGap() {
+		return Random.Range(6, 9) * 4-(int)(platSpeedX*3);
+	}
+	int platHeight() {
+		return (int)(Random.Range(0.4f, 0.9f) * screenHeight);
 	}
 
 	public override void PerGameStart() {
 		platformList.Clear();
+		platformSpares.Clear();
 
 		float nextPlatformX = 0;
 		float howLongIsNextPlatform;
 		float platformGap;
-		for(int i=0;i<10;i++) {
-			howLongIsNextPlatform = Random.Range(10,25);
-			platformGap = Random.Range(8,12);
+
+		howLongIsNextPlatform = 0.8f * screenWidth;
+		platformGap = 0.1f * screenWidth;
+		platformList.Add ( new RRPlatform(0, (int)(0.75f*screenHeight), howLongIsNextPlatform) );
+		nextPlatformX += howLongIsNextPlatform + platformGap;
+
+		for(int i=0;i<8;i++) {
+			howLongIsNextPlatform = platLong();
+			platformGap = platGap();
 
 			platformList.Add ( new RRPlatform(nextPlatformX,
-			                                  (int)(Random.Range(0.4f,0.8f)*screenHeight),
-			                                  (int)howLongIsNextPlatform) );
+				platHeight(), (int)howLongIsNextPlatform) );
 			nextPlatformX += howLongIsNextPlatform + platformGap;
 		}
 
@@ -141,20 +160,20 @@ public class GamePlayRRSA : PixelScreenLib {
 
 	// Demo Screen player sees in game before putting in tokens
 	public override void PerGameDemoMode() {
-		rrMoveAndDraw(); // for this game just let the rr bounce
-
-		drawStringCentered(screenWidth/2,screenHeight/8,whiteCol,"Ronald Reagan");
-		drawStringCentered(screenWidth/2,screenHeight/8+8,redCol,"Saves America");
+		truefaceSprite.drawImage(this, 0,0);
+		MP_drawStringCentered(screenWidth/4-20,screenHeight/4-20,yellowCol,"BEST");
+		MP_drawStringCentered(screenWidth/4-20,screenHeight/4-10,yellowCol,""+highScore);
 	}	
 
 	public override void PerGameDemoModeCoinRequestDisplay() {
 		if( flashing ) {
-			drawStringCentered(screenWidth/2,screenHeight/2,greenCol,"INSERT TOKEN");
+			MP_drawStringCentered(screenWidth/4-20,15,redCol,"INSERT");
+			MP_drawStringCentered(screenWidth/4-20,25,redCol,"TOKEN");
 		}
 	}
 
 	public override void PerGameTimerDisplay() {
-		drawStringCentered(screenWidth/2,10,yellowCol,
+		MP_drawStringCentered(screenWidth/8,10,yellowCol,
 		                   ""+ timerLeft);
 	}
 
@@ -165,10 +184,39 @@ public class GamePlayRRSA : PixelScreenLib {
 
 		drawBoxAt((int)platformX, (int)platformY,(int)platformW,(int)platformH,yellowCol);*/
 
-		foreach( RRPlatform onePlat in platformList ) {
+		float rightMostPlat = -1;
+		for(int i=platformList.Count-1; i>=0;i--) {
+			RRPlatform onePlat = platformList[i];
+
 			onePlat.x += platSpeedX;
+			if(onePlat.x + onePlat.width > rightMostPlat) {
+				rightMostPlat = onePlat.x + onePlat.width;
+			}
 			// Debug.Log ( "X:"+(int)onePlat.x + " Y:" + (int)onePlat.y + " W:" + (int)onePlat.width + " H:" + (int)platformH );
 			drawBoxAt((int)onePlat.x, (int)onePlat.y,(int)onePlat.width,(int)platformH,yellowCol);
+			if(onePlat.x+onePlat.width<0) {
+				platformSpares.Add(onePlat);
+				platformList.RemoveAt(i);
+				addToScore(1);
+			} 
+		}
+
+		platSpeedX = -7.5f - (score / 3.25f);
+			
+		if(rightMostPlat < screenWidth) {
+			RRPlatform extra;
+			if(platformSpares.Count > 0) {
+				extra = platformSpares[0];
+				platformSpares.RemoveAt(0);
+			} else {
+				extra = new RRPlatform();
+			}
+			int platformGap = platLong();
+			int howLongIsNextPlatform = platGap();
+			extra.x = rightMostPlat + platformGap;
+			extra.y = platHeight();
+			extra.width = (int)howLongIsNextPlatform;
+			platformList.Add(extra);
 		}
 	}
 
@@ -180,6 +228,11 @@ public class GamePlayRRSA : PixelScreenLib {
 
 		moveAndDrawPlatforms();
 
+		MP_drawStringCentered(20,15,blackCol,"SCORE");
+		MP_drawStringCentered(20,25,blackCol,""+score);
+
+		MP_drawStringCentered(screenWidth/4-20,15,blackCol,"BEST");
+		MP_drawStringCentered(screenWidth/4-20,25,blackCol,""+highScore);
 
 		// Debugging screen
 		/*

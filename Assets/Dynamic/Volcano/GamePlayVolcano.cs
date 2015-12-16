@@ -8,7 +8,13 @@ public class GamePlayVolcano : GameManager {
 	public Text TimeText;
 	public Text HighScoreText;
 	string savedBottomMessage;
-	
+
+	public BounceSlide slider;
+	public ParticleSystem smoke;
+	public ParticleSystem rocks;
+	public ParticleSystem fire;
+	public ParticleSystem blast;
+
 	/* Reminder:
 	 * override void PerPixelGameBootup() {
 	 * is only for 2D pixel games. Just use Start() here for 3D games.
@@ -20,18 +26,47 @@ public class GamePlayVolcano : GameManager {
 	}
 
 	public override void PerGameFakeAIInput() {
-		if(Random.Range(0, 100) < 40) {
-			addToScore(15);
+		if(Random.Range(0, 100) < 4) {
+			AttemptButton();
+		}
+	}
+
+	void AttemptButton() {
+		if(score > 0) {
+			return;
+		}
+		int newScore = slider.ScoreTest();
+		if(newScore > 0) {
+			slider.GetComponent<BounceSlide>().enabled = false;
+			// smoke.enableEmission = true;
+			rocks.enableEmission = true;
+			rocks.Emit(100);
+			fire.enableEmission = true;
+			blast.enableEmission = true;
+			addToScore(newScore);
+			if(timerLeft >= 10) {
+				endOfPlayTime = Time.time + 9;
+			}
 		}
 	}
 
 	public override void PerGameInput() {
 		if(Input.GetKeyDown(KeyCode.Space)) {
-			addToScore(15);
+			AttemptButton();
 		}
 	}
 
 	public override void PerGameStart() {
+		slider.GetComponent<BounceSlide>().enabled = true;
+		// smoke.enableEmission = false;
+		rocks.enableEmission = false;
+		fire.enableEmission = false;
+		blast.enableEmission = false;
+		// smoke.Clear();
+		rocks.Clear();
+		fire.Clear();
+		blast.Clear();
+
 		savedBottomMessage = TimeText.text;
 		demoLayer.gameObject.SetActive(false);
 		CoinText.text = "Time for Max Boom!";
@@ -56,7 +91,7 @@ public class GamePlayVolcano : GameManager {
 	}
 
 	public override void PerGameLogic() {
-		CoinText.text = "Damage: "+score;
+		CoinText.text = "Damage: "+slider.ScoreTest();//score;
 		// no self driven code yet for this 3D demo, it's in the components instead, Unity-style
 	}
 	

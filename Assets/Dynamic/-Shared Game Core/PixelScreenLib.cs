@@ -17,7 +17,7 @@ public class PixelScreenLib : GameManager {
 	protected int screenWidth; // cache
 	protected int screenHeight; // cache
 
-	Color sharedColor;
+	protected Color sharedColor;
 
 	// Use this for initialization
 	void Awake () {
@@ -459,7 +459,7 @@ public class PixelScreenLib : GameManager {
 		screenBuffer[ atX + (atY * screenWidth) ] = sharedColor;
 	}
 
-	void setBufferPixel(int atX,int atY,Color withColor) {
+	protected void setBufferPixel(int atX,int atY,Color withColor) {
 		screenBuffer[ atX + (atY * screenWidth) ] = withColor;
 	}
 
