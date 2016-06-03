@@ -46,18 +46,20 @@ public class GamePlayMaze : PixelScreenLib {
 			return;
 		}
 
+		int moveSpeed = 2;
+
 		if(Input.GetKey(KeyCode.LeftArrow)) {
-			nextX--;
+			nextX-=moveSpeed;
 		}
 		if(Input.GetKey(KeyCode.RightArrow)) {
-			nextX++;
+			nextX+=moveSpeed;
 		}
 		
 		if(Input.GetKey(KeyCode.UpArrow)) {
-			nextY--;
+			nextY-=moveSpeed;
 		}
 		if(Input.GetKey(KeyCode.DownArrow)) {
-			nextY++;
+			nextY+=moveSpeed;
 		}
 
 		AttemptMoveTo(nextX, nextY);

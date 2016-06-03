@@ -14,7 +14,34 @@ public class PlayerDistrib : MonoBehaviour {
 		}
 	}
 
+	public string ScoresReport() {
+		string toRet = "";
+		for(int i = 0; i < cabinetsList.Length; i++) {
+			toRet += cabinetsList[i].gameName + ": " +
+				cabinetsList[i].gameScreen.getHighScore() + "\n";
+		}
+		return toRet;
+	}
+
+	public void WipeHighScores() {
+		for(int i = 0; i < cabinetsList.Length; i++) {
+			cabinetsList[i].gameScreen.wipeHighScore();
+		}
+	}
+
 	public void Shuffle() {
+		if(MenuManager.tournyMode) {
+			for(int i = 0; i < cabinetsList.Length; i++) {
+				if(cabinetsList[i].playerHere && cabinetsList[i].playerHere != player) {
+					cabinetsList[i].playerHere = null;
+				}
+			}
+			for(int i = 0; i < playersList.Length; i++) {
+				playersList[i].SetActive(MenuManager.tournyMode == false);
+			}
+			return;
+		}
+
 		for(int i = 0; i < cabinetsList.Length; i++) {
 			if(cabinetsList[i].playerHere && cabinetsList[i].playerHere != player) {
 				cabinetsList[i].playerHere = null;

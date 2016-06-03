@@ -16,6 +16,15 @@ public class GameManager : MonoBehaviour {
 	protected int score = 0;
 	protected int highScore = 0;
 
+	public int getHighScore() {
+		return highScore;
+	}
+
+	public void wipeHighScore() {
+		highScore = 0;
+		InstantLoseFromTimeDrain();
+	}
+
 	protected void clearScore() {
 		score = 0;
 	}

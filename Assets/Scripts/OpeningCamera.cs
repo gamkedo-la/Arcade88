@@ -6,6 +6,13 @@ public class OpeningCamera : MonoBehaviour {
 	Vector3 basePos;
 	float totalRot = 90.0f;
 	float shufflePeopleRot = 90.0f;
+
+	public static Camera camera;
+
+	void Awake() {
+		camera = GetComponent<Camera>();
+	}
+
 	// Use this for initialization
 	void Start () {
 		baseRot = transform.rotation;

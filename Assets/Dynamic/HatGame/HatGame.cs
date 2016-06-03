@@ -97,6 +97,9 @@ public class HatGame : PixelScreenLib {
 
 		if(Input.GetKeyDown(KeyCode.Space)) {
 			gamePhase = HatGamePhase.Reveal;
+			if(goalSlot == dudeSlotGoal[selected]) {
+				addToScore(timerLeft);
+			}
 		}
 	}
 

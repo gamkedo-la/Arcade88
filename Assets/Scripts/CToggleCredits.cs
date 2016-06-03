@@ -17,7 +17,9 @@ public class CToggleCredits : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(Input.GetKeyDown(KeyCode.H)) {
+		if( MenuManager.tournyMode ) {
+			creditsText.text = PlayerDistrib.instance.ScoresReport();
+		} else if(Input.GetKeyDown(KeyCode.H)) {
 			showingCredits = !showingCredits;
 			if(showingCredits) {
 				creditsText.text = fullCredits + "\n"+placeholderInstruction;

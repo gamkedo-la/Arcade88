@@ -26,6 +26,7 @@ public class ArcadePlayer : MonoBehaviour {
 
 	public float zoomFOV = 45.0f;
 	private float baseFOV;
+	private float camTilt;
 
 	IEnumerator resetMessage() {
 		yield return new WaitForSeconds(1.25f);
@@ -63,6 +64,10 @@ public class ArcadePlayer : MonoBehaviour {
 		} else {
 			bills += billDelta;
 			tokens += tokenDelta;
+
+			/*if(tokens == 0 && bills == 0 && MenuManager.tournyMode) {
+				bills++; // no automatic money in tourny play
+			}*/
 
 			if(billDelta < 0) {
 				disclaimer = "\nSpent "+pluralString(-billDelta,"Bill");
@@ -110,8 +115,12 @@ public class ArcadePlayer : MonoBehaviour {
 				SoundCenter.instance.PlayClipOn( SoundCenter.instance.billGet,
 				                                transform.position, 1.0f);
 			} else {
-				if(gameOverMessage) {
-					gameOverMessage.SetActive(true);
+				if(MenuManager.tournyMode) {
+					PlayerDistrib.instance.WipeHighScores();
+				} else {
+					if(gameOverMessage) {
+						gameOverMessage.SetActive(true);
+					}
 				}
 				// Application.LoadLevel( Application.loadedLevel );
 				SoundCenter.instance.PlayClipOn( SoundCenter.instance.adultTalk,
@@ -132,6 +141,7 @@ public class ArcadePlayer : MonoBehaviour {
 
 	// Use this for initialization
 	void Start() {
+		camTilt = 342.5f;
 		ticketNum = 0; // forget how many games tried
 		baseFOV = Camera.main.fieldOfView;
 		hideMouse();
@@ -220,12 +230,24 @@ public class ArcadePlayer : MonoBehaviour {
 			if( Physics.Raycast(transform.position, transform.forward, out rhInfo, 3.0f)) {
 				AdultText atScript = rhInfo.collider.GetComponent<AdultText>();
 				if(atScript) {
+					// talk to ticket guy to quit out of high scores round
+					if(atScript.questionList.Length == 1 && MenuManager.tournyMode) {
+						if(gameOverMessage) {
+							gameOverMessage.SetActive(true);
+						}
+						// Application.LoadLevel( Application.loadedLevel );
+						SoundCenter.instance.PlayClipOn( SoundCenter.instance.adultTalk,
+							transform.position, 1.0f);
+						return;
+					}
+
 					parentDialog.SetActive(true);
 					showMouse();
 					lastAdultSpokenTo = rhInfo.collider.GetComponent<TokenInteraction>();
 					dialogLookFocus = rhInfo.collider.transform;
 
 					if(atScript) {
+
 						QuestionOption grabQues = atScript.GetNextQues();
 						int randNots = Random.Range(0,5);
 						expectingResponse = 
@@ -250,11 +272,9 @@ public class ArcadePlayer : MonoBehaviour {
 					PlayableGame playScript = rhInfo.collider.GetComponent<PlayableGame>();
 
 					TokenInteraction tiScript = rhInfo.collider.GetComponent<TokenInteraction>();
-
 					if(tiScript == null) {
 						return;
 					}
-
 					float distFromFront;
 
 					if(playScript) {
@@ -267,7 +287,7 @@ public class ArcadePlayer : MonoBehaviour {
 					} else {
 						distFromFront = 0.0f;
 					}
-					
+
 					if(distFromFront < 1.5f) {
 						bool hadTheMoney = false;
 						if(playScript && playScript.gameScreen.isPlaying) {
@@ -307,12 +327,19 @@ public class ArcadePlayer : MonoBehaviour {
 		}
 
 		float cameraK = 0.89f;
+		float targetTilt;
 		if(playingNow != null) {
 			Camera.main.fieldOfView *= cameraK;
 			Camera.main.fieldOfView += zoomFOV*(1.0f-cameraK);
+			targetTilt = 340.0f;
 		} else {
 			Camera.main.fieldOfView *= cameraK;
 			Camera.main.fieldOfView += baseFOV*(1.0f-cameraK);
+			targetTilt = 346.0f;
 		}
+		float tiltK = 0.9f;
+		camTilt = tiltK*camTilt+(1.0f-tiltK)*targetTilt;
+
+		Camera.main.transform.localRotation = Quaternion.Euler(camTilt, 0.0f, 0.0f);
 	}
 }
