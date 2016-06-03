@@ -117,6 +117,9 @@ public class ArcadePlayer : MonoBehaviour {
 			} else {
 				if(MenuManager.tournyMode) {
 					PlayerDistrib.instance.WipeHighScores();
+					PlayerDistrib.instance.ForgetIfTried();
+					ticketNum = 0;
+					tokenBillsChange(0, 0); // to reset game played count
 				} else {
 					if(gameOverMessage) {
 						gameOverMessage.SetActive(true);
@@ -211,7 +214,7 @@ public class ArcadePlayer : MonoBehaviour {
 				playingNow = null;
 				tokenBillsChange(0,0);
 
-				if(ticketNum == allGameCount) {
+				if(ticketNum == allGameCount && MenuManager.tournyMode==false) {
 					if(winMessage) {
 						winMessage.SetActive(true);
 					}
